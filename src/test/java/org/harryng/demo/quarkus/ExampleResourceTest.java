@@ -7,6 +7,7 @@ import io.smallrye.mutiny.Uni;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -47,7 +48,7 @@ public class ExampleResourceTest {
                 .emitter(emitter -> {
                     Arrays.stream(values).forEach(itm -> {
                         try {
-                            Thread.sleep(2 * 1_000);
+                            TimeUnit.SECONDS.sleep(2);
                             emitter.emit(itm);
 //                            Log.info("emit: " + itm);
                         } catch (InterruptedException e) {
