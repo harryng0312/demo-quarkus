@@ -11,22 +11,22 @@ repositories {
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusCamelArtifactId}:${quarkusPlatformVersion}")
-    implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'io.quarkus:quarkus-arc'
 
-//    implementation "io.quarkus:quarkus-cache"
-//    implementation 'io.quarkus:quarkus-arc'
-//    implementation 'io.quarkus:quarkus-resteasy-jackson'
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy'
+
+    implementation "io.quarkus:quarkus-cache"
+    implementation 'io.quarkus:quarkus-resteasy-jackson'
 //    implementation "io.quarkus:quarkus-scheduler"
-//    implementation "io.quarkus:quarkus-quartz"
+    implementation "io.quarkus:quarkus-quartz"
     implementation "io.quarkus:quarkus-security"
     implementation 'io.quarkus:quarkus-websockets'
 
-//    implementation "io.quarkus:quarkus-resteasy-qute"
+    implementation "io.quarkus:quarkus-resteasy-qute"
 //    implementation "io.quarkus:quarkus-resteasy-reactive-qute"
 
-//    implementation "io.quarkus:quarkus-hibernate-orm"
-//    implementation "io.quarkus:quarkus-jdbc-h2"
+    implementation "io.quarkus:quarkus-hibernate-orm"
+    implementation "io.quarkus:quarkus-jdbc-h2"
 
     implementation "org.apache.camel.quarkus:camel-quarkus-core"
     implementation "org.apache.camel.quarkus:camel-quarkus-netty"
@@ -36,6 +36,8 @@ dependencies {
     implementation "org.bouncycastle:bctls-jdk15on"
 //    implementation "org.bouncycastle:bc-fips"
 //    implementation "org.bouncycastle:bctls-fips"
+
+    implementation 'io.quarkus:quarkus-spring-data-jpa'
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
