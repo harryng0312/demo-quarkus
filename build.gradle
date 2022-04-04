@@ -9,7 +9,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.quarkus:quarkus-websockets'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusCamelArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-resteasy'
@@ -20,7 +19,8 @@ dependencies {
 //    implementation 'io.quarkus:quarkus-resteasy-jackson'
 //    implementation "io.quarkus:quarkus-scheduler"
 //    implementation "io.quarkus:quarkus-quartz"
-//    implementation "io.quarkus:quarkus-security"
+    implementation "io.quarkus:quarkus-security"
+    implementation 'io.quarkus:quarkus-websockets'
 
 //    implementation "io.quarkus:quarkus-resteasy-qute"
 //    implementation "io.quarkus:quarkus-resteasy-reactive-qute"
@@ -30,9 +30,10 @@ dependencies {
 
     implementation "org.apache.camel.quarkus:camel-quarkus-core"
     implementation "org.apache.camel.quarkus:camel-quarkus-netty"
+    implementation "org.apache.camel.quarkus:camel-quarkus-netty-http"
 
-//    implementation "org.bouncycastle:bcprov-jdk15on"
-//    implementation "org.bouncycastle:bctls-jdk15on"
+    implementation "org.bouncycastle:bcprov-jdk15on"
+    implementation "org.bouncycastle:bctls-jdk15on"
 //    implementation "org.bouncycastle:bc-fips"
 //    implementation "org.bouncycastle:bctls-fips"
 
