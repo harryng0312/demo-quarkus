@@ -28,15 +28,15 @@ public class ExampleResourceTest {
     public void testStringUni() {
         Log.info("test uni");
         Uni.createFrom().item("string value")
-            .onItem().transform(val -> {
-                Log.info(val);
-                return val + " after 1";
-            })
-            .onItem().transform(val -> {
-                Log.info(val);
-                return val;
-            })
-            .subscribe().with(val -> Log.info(val));
+                .onItem().transform(val -> {
+                    Log.info(val);
+                    return val + " after 1";
+                })
+                .onItem().transform(val -> {
+                    Log.info(val);
+                    return val;
+                })
+                .subscribe().with(val -> Log.info(val));
     }
 
     @Test
@@ -44,20 +44,20 @@ public class ExampleResourceTest {
         Log.info("test multi");
         var values = new String[]{"0", "1", "3", "4", "5"};
         Multi.createFrom()
-            .emitter(emitter -> {
-                Arrays.stream(values).forEach(itm -> {
-                    try {
-                        Thread.sleep(2 * 1_000);
-                        emitter.emit(itm);
+                .emitter(emitter -> {
+                    Arrays.stream(values).forEach(itm -> {
+                        try {
+                            Thread.sleep(2 * 1_000);
+                            emitter.emit(itm);
 //                            Log.info("emit: " + itm);
-                    } catch (InterruptedException e) {
-                        Log.error("", e);
-                    }
-                });
-            })
-            .subscribe().with(
-                    item -> Log.info("Item val:" + item),
-                    failure -> Log.error("Failed with " + failure),
-                    () -> Log.info("Completed"));
+                        } catch (InterruptedException e) {
+                            Log.error("", e);
+                        }
+                    });
+                })
+                .subscribe().with(
+                        item -> Log.info("Item val:" + item),
+                        failure -> Log.error("Failed with " + failure),
+                        () -> Log.info("Completed"));
     }
 }
