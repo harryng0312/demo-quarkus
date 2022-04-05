@@ -1,7 +1,7 @@
 package org.harryng.demo.quarkus.counter.service;
 
 import org.harryng.demo.quarkus.counter.entity.CounterImpl;
-import org.harryng.demo.quarkus.kernel.counter.CounterPersistence;
+import org.harryng.demo.quarkus.counter.kernel.counter.CounterPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

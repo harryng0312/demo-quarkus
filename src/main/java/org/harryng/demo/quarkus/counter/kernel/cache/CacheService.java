@@ -1,4 +1,4 @@
-package org.harryng.demo.quarkus.kernel.cache;
+package org.harryng.demo.quarkus.counter.kernel.cache;
 
 //import com.hazelcast.map.IMap
 import java.io.Serializable;

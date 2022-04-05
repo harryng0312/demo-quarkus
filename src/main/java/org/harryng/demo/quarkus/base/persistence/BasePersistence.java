@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.lang.RuntimeException;
 
-interface BasePersistence<Id extends Serializable, T extends BaseEntity<Id>> {
+public interface BasePersistence<Id extends Serializable, T extends BaseEntity<Id>> {
     public Class<T> getEntityClass();
     public EntityManager getEntityManager();
 

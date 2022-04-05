@@ -1,4 +1,4 @@
-package org.harryng.demo.quarkus.kernel.counter;
+package org.harryng.demo.quarkus.counter.kernel.counter;
 
 import org.harryng.demo.quarkus.counter.entity.CounterImpl;
 
