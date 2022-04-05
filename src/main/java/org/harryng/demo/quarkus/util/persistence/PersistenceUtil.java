@@ -1,16 +1,14 @@
 package org.harryng.demo.quarkus.util.persistence;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PageInfo;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public class PersistenceUtil {
     public static long countObjectByQuery(
@@ -32,7 +30,7 @@ public class PersistenceUtil {
             Class<T> returnType,
             String queryJpql,
             Map<String, Serializable> params,
-            Pageable pageInfo,
+            PageInfo pageInfo,
             long total,
             LockModeType lockModeType
     ) throws RuntimeException, Exception {
@@ -40,11 +38,11 @@ public class PersistenceUtil {
         typedQuery.setLockMode(lockModeType);
         typedQuery.setFirstResult(pageInfo.getPageNumber() * pageInfo.getPageSize());
         typedQuery.setMaxResults(pageInfo.getPageSize());
-        for(Map.Entry<String, ?> item : params.entrySet()){
+        for (Map.Entry<String, ?> item : params.entrySet()) {
             typedQuery.setParameter(item.getKey(), item.getValue());
         }
         List<T> resultList = typedQuery.getResultList();
         long size = total >= 0 ? total : resultList.size();
-        return new PageImpl(resultList, pageInfo, size);
+        return new Page(resultList, pageInfo, size);
     }
 }

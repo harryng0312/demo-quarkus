@@ -37,7 +37,7 @@ dependencies {
 //    implementation "org.bouncycastle:bc-fips"
 //    implementation "org.bouncycastle:bctls-fips"
 
-    implementation 'io.quarkus:quarkus-spring-data-jpa'
+//    implementation 'io.quarkus:quarkus-spring-data-jpa'
 
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'

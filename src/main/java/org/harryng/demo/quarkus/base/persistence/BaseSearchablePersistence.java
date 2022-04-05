@@ -1,8 +1,8 @@
 package org.harryng.demo.quarkus.base.persistence;
 
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PageInfo;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -17,7 +17,7 @@ public interface BaseSearchablePersistence<Id extends Serializable, T extends Ba
     public Page<T> selectByConditions(
             String queryJpql,
             Map<String, Serializable> params,
-            Pageable pageInfo,
+            PageInfo pageInfo,
             long total
     ) throws RuntimeException, Exception;
 }

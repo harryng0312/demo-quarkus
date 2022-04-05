@@ -2,16 +2,20 @@ package org.harryng.demo.quarkus.counter.service;
 
 import org.harryng.demo.quarkus.counter.entity.CounterImpl;
 import org.harryng.demo.quarkus.counter.kernel.counter.CounterPersistence;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
-@Service("counterService")
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+@Singleton
+@Named("counterService")
 public class CounterServiceImpl implements CounterService {
 
-    @Autowired
-    @Qualifier("counterPersistence")
+//    @Autowired
+//    @Qualifier("counterPersistence")
 //    @Qualifier("counterLockerPersistence")
+    @Inject
+    @Named("counterPersistence")
     protected CounterPersistence persistence;
 
     public CounterImpl insert(String id, long initValue) throws RuntimeException, Exception {

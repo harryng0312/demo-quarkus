@@ -1,9 +1,9 @@
 package org.harryng.demo.quarkus.base.persistence;
 
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
+import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PageInfo;
 import org.harryng.demo.quarkus.util.persistence.PersistenceUtil;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import javax.persistence.LockModeType;
 import java.io.Serializable;
@@ -30,7 +30,7 @@ public abstract class AbstractSearchablePersistence<Id extends Serializable, T e
     public Page<T> selectByConditions(
         String queryJpql,
         Map<String, Serializable> params,
-        Pageable pageInfo,
+        PageInfo pageInfo,
         long total
     ) throws RuntimeException, Exception {
         return PersistenceUtil.selectObjectByQuery(

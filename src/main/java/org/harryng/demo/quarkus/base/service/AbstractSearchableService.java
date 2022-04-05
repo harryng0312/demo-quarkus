@@ -3,8 +3,8 @@ package org.harryng.demo.quarkus.base.service;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchablePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PageInfo;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -35,7 +35,7 @@ public abstract class AbstractSearchableService<Id extends Serializable, T exten
             SessionHolder session,
             String queryStr,
             Map<String, Serializable> params,
-            Pageable pageInfo,
+            PageInfo pageInfo,
             long total,
             Map<String, Serializable> extras
     ) throws RuntimeException, Exception {

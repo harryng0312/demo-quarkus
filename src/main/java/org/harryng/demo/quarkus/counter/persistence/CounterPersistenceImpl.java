@@ -5,13 +5,15 @@ import io.quarkus.cache.CacheManager;
 import io.quarkus.hibernate.orm.PersistenceUnit;
 import org.harryng.demo.quarkus.counter.entity.CounterImpl;
 import org.harryng.demo.quarkus.counter.kernel.counter.CounterPersistence;
-import org.springframework.stereotype.Repository;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository("counterPersistence")
+@Singleton
+@Named("counterPersistence")
 public class CounterPersistenceImpl implements CounterPersistence {
 
     protected static Object lock = new Object();
@@ -50,7 +52,7 @@ public class CounterPersistenceImpl implements CounterPersistence {
     }
 
     public CounterImpl currentCounter(String id) {
-        CounterImpl counter = cache.get(id, k -> (CounterImpl)null).await().indefinitely();
+        CounterImpl counter = cache.get(id, k -> (CounterImpl) null).await().indefinitely();
         if (counter == null) {
             // if not exits in cache - select from db
             counter = getEntityManager().find(CounterImpl.class, id, LockModeType.PESSIMISTIC_WRITE);
