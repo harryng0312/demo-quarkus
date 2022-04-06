@@ -6,6 +6,7 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 public class AbstractService<Id extends Serializable, T extends BaseEntity<Id>> implements BaseService<Id, T> {
     protected BasePersistence<Id, T> persistence;
@@ -16,8 +17,8 @@ public class AbstractService<Id extends Serializable, T extends BaseEntity<Id>> 
     }
 
     @Override
-    public T getById(SessionHolder session, Id id, Map<String, Serializable> extras) throws RuntimeException, Exception {
-        return getPersistence().selectById(id);
+    public Optional<T> getById(SessionHolder session, Id id, Map<String, Serializable> extras) throws RuntimeException, Exception {
+        return Optional.ofNullable(getPersistence().selectById(id));
     }
 
     @Override

@@ -2,16 +2,16 @@ package org.harryng.demo.quarkus.user.entity;
 
 import org.harryng.demo.quarkus.base.entity.AbstractStatedEntity;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 public class UserModel extends AbstractStatedEntity<Long> {
 
-    private String username;
-    private String password;
-    private String screenName;
-    private LocalDate dob;
-    private String passwdEncryptedMethod;
+    private String username = "";
+    private String password = "";
+    private String screenName = "";
+    private LocalDate dob = LocalDate.of(1_800, Month.JANUARY, 1);
+    private String passwdEncryptedMethod = "plain";
 
     public UserModel(){super();}
 
