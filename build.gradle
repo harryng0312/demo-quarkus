@@ -14,16 +14,18 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
 
 //    restful
-    implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'io.quarkus:quarkus-resteasy-jackson'
-    implementation 'io.quarkus:quarkus-resteasy-jaxb'
+//    implementation 'io.quarkus:quarkus-resteasy'
+//    implementation 'io.quarkus:quarkus-resteasy-jackson'
+//    implementation 'io.quarkus:quarkus-resteasy-jaxb'
 //    implementation "io.quarkus:quarkus-resteasy-jsonb"
+//    implementation "io.quarkus:quarkus-resteasy-qute"
 
 //    reactive
-//    implementation "io.quarkus:quarkus-vertx"
-//    implementation "io.quarkus:quarkus-resteasy-reactive"
-//    implementation "io.quarkus:quarkus-resteasy-reactive-jackson"
-//    implementation "io.quarkus:quarkus-resteasy-reactive-jaxb"
+    implementation "io.quarkus:quarkus-vertx"
+    implementation "io.quarkus:quarkus-resteasy-reactive"
+    implementation "io.quarkus:quarkus-resteasy-reactive-jackson"
+    implementation "io.quarkus:quarkus-resteasy-reactive-jaxb"
+    implementation "io.quarkus:quarkus-resteasy-reactive-qute"
 //    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
 
     implementation "io.quarkus:quarkus-cache"
@@ -33,8 +35,6 @@ dependencies {
     implementation "io.quarkus:quarkus-security"
     implementation 'io.quarkus:quarkus-websockets'
 
-    implementation "io.quarkus:quarkus-resteasy-qute"
-//    implementation "io.quarkus:quarkus-resteasy-reactive-qute"
 
     implementation "io.quarkus:quarkus-hibernate-orm"
     implementation "io.quarkus:quarkus-jdbc-h2"
