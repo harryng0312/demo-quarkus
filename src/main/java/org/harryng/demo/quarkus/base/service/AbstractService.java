@@ -8,13 +8,10 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
-public class AbstractService<Id extends Serializable, T extends BaseEntity<Id>> implements BaseService<Id, T> {
-    protected BasePersistence<Id, T> persistence;
+public abstract class AbstractService<Id extends Serializable, T extends BaseEntity<Id>> implements BaseService<Id, T> {
 
     @Override
-    public BasePersistence<Id, T> getPersistence() {
-        return persistence;
-    }
+    public abstract BasePersistence<Id, T> getPersistence();
 
     @Override
     public Optional<T> getById(SessionHolder session, Id id, Map<String, Serializable> extras) throws RuntimeException, Exception {

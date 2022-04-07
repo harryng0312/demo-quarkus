@@ -19,6 +19,10 @@ public class SessionHolder implements Serializable {
     private static Locale lang = Locale.getDefault();
     private UserImpl user;
 
+    private SessionHolder(UserImpl user) {
+        this.user = user;
+    }
+
     protected static UserImpl initAnoymousUser(){
         var dateNow = LocalDateTime.now();
         var anonymousUser = new UserImpl(
@@ -35,15 +39,11 @@ public class SessionHolder implements Serializable {
         return anonymousUser;
     }
 
-    protected static SessionHolder createAnonymousSession(){
+    public static SessionHolder createAnonymousSession(){
         return new SessionHolder(initAnoymousUser());
     }
 
-    protected static SessionHolder createInstance(UserImpl user) {
+    public static SessionHolder createInstance(UserImpl user) {
         return new SessionHolder(user);
-    }
-
-    private SessionHolder(UserImpl user) {
-        this.user = user;
     }
 }

@@ -1,5 +1,6 @@
 package org.harryng.demo.quarkus.user.service;
 
+import org.harryng.demo.quarkus.base.persistence.BaseSearchablePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
@@ -8,6 +9,7 @@ import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 import org.harryng.demo.quarkus.util.page.Sort;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
@@ -19,9 +21,12 @@ import java.util.Map;
 @Named("userService")
 public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> implements UserService {
 
+    @Inject
+    protected UserPersistence userPersistence;
+
     @Override
     public UserPersistence getPersistence() {
-        return (UserPersistence) super.getPersistence();
+        return this.userPersistence;
     }
 
     @Override

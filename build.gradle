@@ -14,11 +14,14 @@ dependencies {
 
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-resteasy'
+//    implementation "io.quarkus:quarkus-vertx"
+//    implementation "io.quarkus:quarkus-resteasy-reactive-jackson"
+//    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
 
     implementation "io.quarkus:quarkus-cache"
     implementation 'io.quarkus:quarkus-resteasy-jackson'
 //    implementation "io.quarkus:quarkus-scheduler"
-    implementation "io.quarkus:quarkus-quartz"
+//    implementation "io.quarkus:quarkus-quartz"
     implementation "io.quarkus:quarkus-security"
     implementation 'io.quarkus:quarkus-websockets'
 
@@ -28,9 +31,9 @@ dependencies {
     implementation "io.quarkus:quarkus-hibernate-orm"
     implementation "io.quarkus:quarkus-jdbc-h2"
 
-    implementation "org.apache.camel.quarkus:camel-quarkus-core"
-    implementation "org.apache.camel.quarkus:camel-quarkus-netty"
-    implementation "org.apache.camel.quarkus:camel-quarkus-netty-http"
+//    implementation "org.apache.camel.quarkus:camel-quarkus-core"
+//    implementation "org.apache.camel.quarkus:camel-quarkus-netty"
+//    implementation "org.apache.camel.quarkus:camel-quarkus-netty-http"
 
     implementation "org.bouncycastle:bcprov-jdk15on"
     implementation "org.bouncycastle:bctls-jdk15on"

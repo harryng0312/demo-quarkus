@@ -10,13 +10,23 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.restassured.RestAssured.given;
+
 @QuarkusTest
 public class TestUser {
     @Test
-    public void sort(){
+    public void sort() {
         List<String> content = new ArrayList<>();
         PageInfo pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id"));
         Page p = new Page<>(content, pageInfo, 10);
-        Log.info("unsorted: " + (Sort.unsorted()==null));
+        Log.info("unsorted: " + (Sort.unsorted() == null));
+    }
+
+    @Test
+    public void getUser() {
+        var body = given()
+                .when().get("/user/get-username-sync?id=1")
+                .body().prettyPrint();
+        Log.info("test Username:" + body);
     }
 }

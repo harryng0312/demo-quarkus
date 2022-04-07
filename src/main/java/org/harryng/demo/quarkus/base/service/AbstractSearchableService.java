@@ -13,9 +13,7 @@ public abstract class AbstractSearchableService<Id extends Serializable, T exten
         extends AbstractService<Id, T> implements BaseSearchableService<Id, T> {
 
     @Override
-    public BaseSearchablePersistence<Id, T> getPersistence() {
-        return (BaseSearchablePersistence<Id, T>) super.getPersistence();
-    }
+    public abstract BaseSearchablePersistence<Id, T> getPersistence();
 
     @Override
     public long findByConditions(

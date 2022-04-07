@@ -9,7 +9,7 @@
                 <column name="username"/>
             </basic>
             <basic name="password">
-                <column name="password"/>
+                <column name="password_"/>
             </basic>
             <basic name="screenName">
                 <column name="screenname"/>
@@ -18,7 +18,7 @@
                 <column name="dob"/>
             </basic>
             <basic name="passwdEncryptedMethod">
-                <column name="passwd_enc_method"/>
+                <column name="passwd_encrypted_method"/>
             </basic>
         </attributes>
     </mapped-superclass>
