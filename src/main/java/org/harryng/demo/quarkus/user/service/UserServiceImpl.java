@@ -1,6 +1,6 @@
 package org.harryng.demo.quarkus.user.service;
 
-import org.harryng.demo.quarkus.base.persistence.BaseSearchablePersistence;
+import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
@@ -12,6 +12,7 @@ import org.harryng.demo.quarkus.util.page.Sort;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @Singleton
 @Named("userService")
+@Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> implements UserService {
 
     @Inject

@@ -1,6 +1,6 @@
 CREATE TABLE user_
 (
-    id_                     varchar2(36)  not null,
+    id_                     bigint        not null,
     created_date            datetime      not null,
     modified_date           datetime      not null,
     status                  varchar2(36)  not null,

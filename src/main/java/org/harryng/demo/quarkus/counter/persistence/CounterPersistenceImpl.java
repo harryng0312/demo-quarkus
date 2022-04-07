@@ -19,7 +19,7 @@ public class CounterPersistenceImpl implements CounterPersistence {
     protected static Object lock = new Object();
 
     @PersistenceUnit("primary_pu")
-    private EntityManager defaultEntityManager;
+    protected EntityManager defaultEntityManager;
 
     //    @Autowired
 //    @Qualifier("localCacheManager")

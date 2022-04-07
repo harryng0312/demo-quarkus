@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
 public class IndexController {
 
     @Location("pages/index.html")
-    private Template indexTempl;
+    protected Template indexTempl;
 
     @PostConstruct
     public void init() {

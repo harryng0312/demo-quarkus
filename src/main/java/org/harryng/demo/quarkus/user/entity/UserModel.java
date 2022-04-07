@@ -2,6 +2,7 @@ package org.harryng.demo.quarkus.user.entity;
 
 import org.harryng.demo.quarkus.base.entity.AbstractStatedEntity;
 
+import javax.xml.bind.annotation.XmlType;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 

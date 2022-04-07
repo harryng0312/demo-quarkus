@@ -6,9 +6,11 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Map;
 
+@Transactional(Transactional.TxType.NOT_SUPPORTED)
 public abstract class AbstractSearchableService<Id extends Serializable, T extends BaseEntity<Id>>
         extends AbstractService<Id, T> implements BaseSearchableService<Id, T> {
 
