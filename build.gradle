@@ -11,15 +11,23 @@ repositories {
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusCamelArtifactId}:${quarkusPlatformVersion}")
-
     implementation 'io.quarkus:quarkus-arc'
+
+//    restful
     implementation 'io.quarkus:quarkus-resteasy'
+    implementation 'io.quarkus:quarkus-resteasy-jackson'
+    implementation 'io.quarkus:quarkus-resteasy-jaxb'
+//    implementation "io.quarkus:quarkus-resteasy-jsonb"
+
+//    reactive
 //    implementation "io.quarkus:quarkus-vertx"
+//    implementation "io.quarkus:quarkus-resteasy-reactive"
 //    implementation "io.quarkus:quarkus-resteasy-reactive-jackson"
+//    implementation "io.quarkus:quarkus-resteasy-reactive-jaxb"
 //    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
 
     implementation "io.quarkus:quarkus-cache"
-    implementation 'io.quarkus:quarkus-resteasy-jackson'
+
 //    implementation "io.quarkus:quarkus-scheduler"
 //    implementation "io.quarkus:quarkus-quartz"
     implementation "io.quarkus:quarkus-security"
