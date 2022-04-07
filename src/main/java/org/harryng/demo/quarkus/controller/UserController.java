@@ -1,25 +1,20 @@
 package org.harryng.demo.quarkus.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.logging.Log;
-import io.smallrye.common.annotation.Blocking;
-import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.mutiny.core.Vertx;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.Collections;
 
 @ApplicationScoped
@@ -28,6 +23,8 @@ public class UserController extends AbstractController {
 
     @Inject
     protected UserService userService;
+
+    protected Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GET
     @Path("/get-username-sync")
@@ -45,7 +42,7 @@ public class UserController extends AbstractController {
             strBuilder.append(user.getUsername());
             rs = strBuilder.toString();
         } catch (Exception e) {
-            Log.error("", e);
+            logger.error("", e);
         }
         return rs;
     }
@@ -62,7 +59,7 @@ public class UserController extends AbstractController {
             var opt = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap());
             rs = opt.onItem().ifNull().continueWith(UserImpl::new).await().indefinitely();
         } catch (Exception e) {
-            Log.error("", e);
+            logger.error("", e);
         }
         return rs;
     }
@@ -85,12 +82,12 @@ public class UserController extends AbstractController {
                                 throw new NotFoundException();
                             }
                         } catch (JsonProcessingException e) {
-                            Log.error("", e);
+                            logger.error("", e);
                         }
                         return Uni.createFrom().item(val);
                     }));
         } catch (Exception e) {
-            Log.error("", e);
+            logger.error("", e);
         }
         return rs;
 //        return vertx.executeBlocking(rs);
