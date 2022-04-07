@@ -1,10 +1,14 @@
 package org.harryng.demo.quarkus.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.logging.Log;
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.mutiny.core.Vertx;
+import org.harryng.demo.quarkus.base.controller.AbstractController;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -18,16 +22,10 @@ import java.util.Collections;
 
 @ApplicationScoped
 @Path("/user")
-public class UserController {
+public class UserController extends AbstractController {
 
     @Inject
     protected UserService userService;
-
-    @Inject
-    protected HttpServerRequest request;
-
-    @Inject
-    protected Vertx vertx;
 
     @GET
     @Path("/get-username-sync")
@@ -37,7 +35,7 @@ public class UserController {
         String rs = "";
         try {
             var strBuilder = new StringBuilder();
-            strBuilder.append(request.uri()).append("\n");
+            strBuilder.append(getRequest().uri()).append("\n");
             var opt = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap());
             var user = opt
                     .onItem().ifNull().continueWith(UserImpl::new)
@@ -74,11 +72,21 @@ public class UserController {
 //    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 //    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 //    @Transactional(Transactional.TxType.NOT_SUPPORTED)
-    public Uni<UserImpl> getUserByIdAsync(@QueryParam("id") long id) {
-        Uni<UserImpl> rs = null;
+    public Uni<String> getUserByIdAsync(@QueryParam("id") long id) {
+        Uni<String> rs = Uni.createFrom().item("{}");
         try {
-            rs = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap());
-            rs.onItem().ifNull().continueWith(UserImpl::new);
+            rs = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap())
+                    .flatMap(user -> {
+                        String val = "{}";
+                        try {
+                            if (user != null) {
+                                val = getObjectMapper().writeValueAsString(user);
+                            }
+                        } catch (JsonProcessingException e) {
+                            Log.error("", e);
+                        }
+                        return Uni.createFrom().item(val);
+                    });
         } catch (Exception e) {
             Log.error("", e);
         }

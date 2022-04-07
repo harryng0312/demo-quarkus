@@ -1,5 +1,6 @@
 package org.harryng.demo.quarkus.base.service;
 
+import org.harryng.demo.quarkus.base.entity.AbstractEntity;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchablePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -11,7 +12,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
-public abstract class AbstractSearchableService<Id extends Serializable, T extends BaseEntity<Id>>
+public abstract class AbstractSearchableService<Id extends Serializable, T extends AbstractEntity<Id>>
         extends AbstractService<Id, T> implements BaseSearchableService<Id, T> {
 
     @Override

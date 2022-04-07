@@ -1,6 +1,6 @@
 package org.harryng.demo.quarkus.user.service;
 
-import org.eclipse.microprofile.context.ManagedExecutor;
+import io.smallrye.mutiny.Uni;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
@@ -29,6 +29,12 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     public UserPersistence getPersistence() {
         return this.userPersistence;
+    }
+
+    @Override
+    public Uni<UserImpl> getById(SessionHolder session, Long id, Map<String, Serializable> extras) throws RuntimeException, Exception {
+//        var user = getPersistence().selectById(id);
+        return Uni.createFrom().item((UserImpl) null);
     }
 
     @Override

@@ -12,8 +12,6 @@ public abstract class AbstractPersistence<Id extends Serializable, T extends Bas
 
     private Class<T> entityClass;
 
-    //    @Inject
-//    @Named("primary_pu")
     @PersistenceUnit("primary_pu")
     protected EntityManager defaultEntityManager;
 

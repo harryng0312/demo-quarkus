@@ -7,6 +7,7 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 public interface BaseService<Id extends Serializable, T extends BaseEntity<Id>> {
     public BasePersistence<Id, T> getPersistence();
