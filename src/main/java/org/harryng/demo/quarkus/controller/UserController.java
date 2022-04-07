@@ -46,12 +46,12 @@ public class UserController {
     }
 
     @GET
-    @Path("/get-user-by-id")
+    @Path("/get-user-by-id-sync")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 //    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 //    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public UserImpl getUserById(@QueryParam("id") long id){
+    public UserImpl getUserByIdSync(@QueryParam("id") long id){
         UserImpl rs = null;
         try {
             var opt = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap());
