@@ -28,8 +28,8 @@ dependencies {
     implementation "io.quarkus:quarkus-resteasy-reactive-qute"
 //    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
 
-    implementation "io.quarkus:quarkus-resteasy-mutiny"
-    implementation "io.quarkus:quarkus-smallrye-context-propagation"
+//    implementation "io.quarkus:quarkus-resteasy-mutiny"
+//    implementation "io.quarkus:quarkus-smallrye-context-propagation"
     implementation "io.quarkus:quarkus-cache"
 
 //    implementation "io.quarkus:quarkus-scheduler"
