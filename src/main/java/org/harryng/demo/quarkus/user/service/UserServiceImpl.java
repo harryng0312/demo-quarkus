@@ -33,8 +33,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Override
     public Uni<UserImpl> getById(SessionHolder session, Long id, Map<String, Serializable> extras) throws RuntimeException, Exception {
-        var user = getPersistence().selectById(id);
-        return Uni.createFrom().item(user);
+//        var user = getPersistence().selectById(id);
+        return Uni.createFrom().item((UserImpl) null);
     }
 
     @Override

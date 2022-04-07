@@ -15,6 +15,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Collections;
 
 @ApplicationScoped
@@ -79,7 +80,8 @@ public class UserController extends AbstractController {
                             if (user != null) {
                                 val = getObjectMapper().writeValueAsString(user);
                             } else {
-                                throw new NotFoundException();
+//                                throw new NotFoundException();
+                                throw new ClientErrorException(Response.Status.NOT_FOUND);
                             }
                         } catch (JsonProcessingException e) {
                             logger.error("", e);
