@@ -6,6 +6,7 @@ import io.quarkus.logging.Log;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.mutiny.core.Vertx;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
@@ -18,6 +19,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Collections;
 
 @ApplicationScoped
@@ -69,24 +71,24 @@ public class UserController extends AbstractController {
     @Path("/get-user-by-id-async")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-//    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 //    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public Uni<String> getUserByIdAsync(@QueryParam("id") long id) {
         Uni<String> rs = Uni.createFrom().item("{}");
         try {
             rs = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap())
-                    .flatMap(user -> {
+                    .flatMap(Unchecked.function(user -> {
                         String val = "{}";
                         try {
                             if (user != null) {
                                 val = getObjectMapper().writeValueAsString(user);
+                            } else {
+                                throw new NotFoundException();
                             }
                         } catch (JsonProcessingException e) {
                             Log.error("", e);
                         }
                         return Uni.createFrom().item(val);
-                    });
+                    }));
         } catch (Exception e) {
             Log.error("", e);
         }
