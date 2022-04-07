@@ -5,6 +5,7 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.harryng.demo.quarkus.base.persistence.BasePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
+import org.reactivestreams.Publisher;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -16,6 +17,9 @@ public abstract class AbstractService<Id extends Serializable, T extends BaseEnt
 
     @Inject
     protected ManagedExecutor managedExecutor;
+//    @Inject
+//    @Channel
+    protected Publisher<T> pubUser;
 
     @Override
     public abstract BasePersistence<Id, T> getPersistence();
