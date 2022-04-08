@@ -12,7 +12,7 @@ public abstract class AbstractPersistence<Id extends Serializable, T extends Bas
 
     private Class<T> entityClass;
 
-    @PersistenceUnit("primary_pu")
+//    @PersistenceUnit("primary_pu")
     protected EntityManager defaultEntityManager;
 
     public EntityManager getEntityManager() {
