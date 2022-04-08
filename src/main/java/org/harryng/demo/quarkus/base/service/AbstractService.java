@@ -5,8 +5,10 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
 import org.harryng.demo.quarkus.base.persistence.BasePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Map;
@@ -17,6 +19,10 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
 
     @Inject
     protected ManagedExecutor managedExecutor;
+
+    @Inject
+//    @Named("primary_pu")
+    protected Mutiny.SessionFactory sessionFactory;
 
     @Override
     public abstract BasePersistence<Id, T> getPersistence();

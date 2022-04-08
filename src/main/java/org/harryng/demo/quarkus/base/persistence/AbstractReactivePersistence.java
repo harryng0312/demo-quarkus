@@ -1,11 +1,9 @@
 package org.harryng.demo.quarkus.base.persistence;
 
-import io.quarkus.hibernate.orm.PersistenceUnit;
 import io.smallrye.mutiny.Uni;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.hibernate.reactive.mutiny.Mutiny;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 
