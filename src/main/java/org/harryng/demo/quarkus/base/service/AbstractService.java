@@ -22,7 +22,6 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
     protected ManagedExecutor managedExecutor;
 
     @Inject
-    // @Named("primary_ds")
     protected Mutiny.SessionFactory sessionFactory;
 
     @Override

@@ -16,7 +16,6 @@ public abstract class AbstractReactivePersistence<Id extends Serializable, T ext
     private Class<T> entityClass;
     
     @Inject
-    @Named("primary_ds")
     Mutiny.SessionFactory sessionFactory;
 //    @Inject
 //    Uni<Mutiny.Session> session;
