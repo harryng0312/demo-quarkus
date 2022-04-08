@@ -41,7 +41,9 @@ dependencies {
 
     implementation "io.quarkus:quarkus-hibernate-orm"
     implementation "io.quarkus:quarkus-narayana-jta"
-    implementation "io.quarkus:quarkus-jdbc-h2"
+    implementation "io.quarkus:quarkus-jdbc-postgresql"
+    implementation "io.quarkus:quarkus-hibernate-reactive"
+    implementation "io.quarkus:quarkus-reactive-pg-client"
 
 //    implementation "org.apache.camel.quarkus:camel-quarkus-core"
 //    implementation "org.apache.camel.quarkus:camel-quarkus-netty"
