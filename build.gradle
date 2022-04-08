@@ -12,6 +12,7 @@ dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusCamelArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-arc'
+    
 //    implementation "org.jboss.logmanager:log4j2-jboss-logmanager"
 
 //    restful

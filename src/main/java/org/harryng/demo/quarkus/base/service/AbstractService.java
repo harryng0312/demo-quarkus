@@ -1,5 +1,6 @@
 package org.harryng.demo.quarkus.base.service;
 
+import io.quarkus.hibernate.orm.PersistenceUnit;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
@@ -21,7 +22,7 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
     protected ManagedExecutor managedExecutor;
 
     @Inject
-//    @Named("primary_pu")
+    // @Named("primary_ds")
     protected Mutiny.SessionFactory sessionFactory;
 
     @Override
