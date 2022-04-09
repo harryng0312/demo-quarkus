@@ -40,10 +40,8 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
     @Override
     public Uni<Integer> add(SessionHolder sessionHolder, T obj, Map<String, Object> extras) throws RuntimeException, Exception {
         // return Uni.createFrom().item(getPersistence().insert(obj));
-        Uni<Mutiny.Session> transSession = (Uni<Mutiny.Session>) extras.get("transSession");
-        return transSession.flatMap(Unchecked.function(
-            session -> getReactivePersistence().insert(session, obj)
-        ));
+        Mutiny.Session transSession = (Mutiny.Session) extras.get("transSession");
+        return getReactivePersistence().insert(transSession, obj);
     }
 
     @Override

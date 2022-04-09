@@ -71,7 +71,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
             //             return Uni.createFrom().item(itm);
             //         }))
             //         .eventually(session::close))),
-           getReactivePersistence().insert(transSession, user),
+            // getReactivePersistence().insert(transSession, user),
+            super.add(sessionHolder, user, extras),
             Uni.createFrom().item(() -> {
                 return -1;
             }))
