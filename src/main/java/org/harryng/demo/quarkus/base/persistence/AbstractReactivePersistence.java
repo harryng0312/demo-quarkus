@@ -3,7 +3,6 @@ package org.harryng.demo.quarkus.base.persistence;
 import java.io.Serializable;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.hibernate.reactive.mutiny.Mutiny;
