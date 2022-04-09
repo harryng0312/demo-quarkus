@@ -1,18 +1,18 @@
 package org.harryng.demo.quarkus.base.service;
 
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
-import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchablePersistence;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 
-import javax.transaction.Transactional;
+import io.smallrye.mutiny.Uni;
+
 import java.io.Serializable;
 import java.util.Map;
 
-@Transactional(Transactional.TxType.NOT_SUPPORTED)
+// @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public abstract class AbstractSearchableService<Id extends Serializable, T extends AbstractEntity<Id>>
         extends AbstractService<Id, T> implements BaseSearchableService<Id, T> {
 
@@ -23,32 +23,24 @@ public abstract class AbstractSearchableService<Id extends Serializable, T exten
     public abstract BaseSearchableReactivePersistence<Id, T> getReactivePersistence();
 
     @Override
-    public long findByConditions(
-            SessionHolder session,
+    public Uni<Long> findByConditions(
+            SessionHolder sessionHolder,
             String countJpql,
-            Map<String, Serializable> params,
-            Map<String, Serializable> extras
+            Map<String, Object> params,
+            Map<String, Object> extras
     ) throws RuntimeException, Exception {
-        return getPersistence().countByConditions(
-                countJpql,
-                params
-        );
+        return Uni.createFrom().nothing();
     }
 
     @Override
-    public Page<T> findByConditions(
-            SessionHolder session,
+    public Uni<Page<T>> findByConditions(
+            SessionHolder sessionHolder,
             String queryStr,
-            Map<String, Serializable> params,
+            Map<String, Object> params,
             PageInfo pageInfo,
             long total,
-            Map<String, Serializable> extras
+            Map<String, Object> extras
     ) throws RuntimeException, Exception {
-        return getPersistence().selectByConditions(
-                queryStr,
-                params,
-                pageInfo,
-                total
-        );
+        return Uni.createFrom().nothing();
     }
 }

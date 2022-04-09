@@ -5,24 +5,26 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 
+import io.smallrye.mutiny.Uni;
+
 import java.io.Serializable;
 import java.util.Map;
 
 public interface BaseSearchableService<Id extends Serializable, T extends BaseEntity<Id>> extends BaseService<Id, T> {
 
-    public long findByConditions(
-            SessionHolder session,
+    public Uni<Long> findByConditions(
+            SessionHolder sessionHolder,
             String countJpql,
-            Map<String, Serializable> params,
-            Map<String, Serializable> extras
+            Map<String, Object> params,
+            Map<String, Object> extras
     ) throws RuntimeException, Exception;
 
-    public Page<T> findByConditions(
-            SessionHolder session,
+    public Uni<Page<T>> findByConditions(
+            SessionHolder sessionHolder,
             String queryJpql,
-            Map<String, Serializable> params,
+            Map<String, Object> params,
             PageInfo pageInfo,
             long total,
-            Map<String, Serializable> extras
+            Map<String, Object> extras
     ) throws RuntimeException, Exception;
 }

@@ -1,6 +1,5 @@
 package org.harryng.demo.quarkus.base.persistence;
 
-import io.quarkus.hibernate.orm.PersistenceUnit;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 
 import javax.persistence.EntityManager;

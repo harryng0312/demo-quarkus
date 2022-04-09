@@ -28,6 +28,7 @@ dependencies {
     implementation "io.quarkus:quarkus-resteasy-reactive-jackson"
     implementation "io.quarkus:quarkus-resteasy-reactive-jaxb"
     implementation "io.quarkus:quarkus-resteasy-reactive-qute"
+    implementation "io.quarkus:quarkus-reactive-routes"
 //    implementation "io.smallrye.reactive:smallrye-mutiny-vertx-web-client"
 
 //    implementation "io.quarkus:quarkus-resteasy-mutiny"

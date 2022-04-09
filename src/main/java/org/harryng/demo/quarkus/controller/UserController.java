@@ -1,6 +1,7 @@
 package org.harryng.demo.quarkus.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -11,7 +12,7 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -20,8 +21,11 @@ import javax.ws.rs.core.Response.Status;
 
 import java.util.Collections;
 
-@ApplicationScoped
+// @ApplicationScoped
+@RequestScoped
 @Path("/user")
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class UserController extends AbstractController {
 
     @Inject
@@ -32,12 +36,11 @@ public class UserController extends AbstractController {
     @GET
     @Path("/get-username-block")
     @Produces({MediaType.TEXT_PLAIN})
-//    @NonBlocking
     public String getUsernameSync(@QueryParam("id") long id) {
         String rs = "";
         try {
             var strBuilder = new StringBuilder();
-            strBuilder.append(getRequest().uri()).append("\n");
+            strBuilder.append(getServerRequest().uri()).append("\n");
             var opt = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap());
             var user = opt
                     .onItem().ifNull().continueWith(UserImpl::new)
@@ -52,10 +55,6 @@ public class UserController extends AbstractController {
 
     @GET
     @Path("/get-user-by-id-block")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-//    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public UserImpl getUserByIdSync(@QueryParam("id") long id) {
         UserImpl rs = null;
         try {
@@ -69,9 +68,6 @@ public class UserController extends AbstractController {
 
     @GET
     @Path("/get-user-by-id-nonblock")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public Uni<Response> getUserByIdAsync(@QueryParam("id") long id) {
         Uni<Response> rs = Uni.createFrom().item(Response.status(Status.NOT_FOUND).build());
         try {
@@ -99,5 +95,17 @@ public class UserController extends AbstractController {
         }
         return rs;
 //        return vertx.executeBlocking(rs);
+    }
+    
+    @POST
+    @Path("/add-user-nonblock")
+    public Uni<Response> addUserNonBlock(String reqBodyStr) throws RuntimeException, Exception{
+        var userImpl = getObjectMapper().readValue(reqBodyStr, UserImpl.class);
+        return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
+            logger.info("controller transSession:" + session.hashCode());
+            return userService.add(
+                SessionHolder.createAnonymousSession(), userImpl, 
+                Collections.singletonMap("transSession", session));
+        })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
     }
 }

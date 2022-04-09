@@ -1,7 +1,8 @@
 package org.harryng.demo.quarkus.base.service;
 
-import io.quarkus.hibernate.orm.PersistenceUnit;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
+
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
 import org.harryng.demo.quarkus.base.persistence.BasePersistence;
@@ -10,18 +11,17 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Map;
 
-@Transactional(Transactional.TxType.NOT_SUPPORTED)
+// @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public abstract class AbstractService<Id extends Serializable, T extends AbstractEntity<Id>> implements BaseService<Id, T> {
 
     @Inject
     protected ManagedExecutor managedExecutor;
 
-    @Inject
-    protected Mutiny.SessionFactory sessionFactory;
+    // @Inject
+    // protected Mutiny.SessionFactory sessionFactory;
 
     @Override
     public abstract BasePersistence<Id, T> getPersistence();
@@ -30,22 +30,36 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
     public abstract BaseReactivePersistence<Id, T> getReactivePersistence();
 
     @Override
-    public Uni<T> getById(SessionHolder session, Id id, Map<String, Serializable> extras) throws RuntimeException, Exception {
-        return Uni.createFrom().item(getPersistence().selectById(id));
+    public Uni<T> getById(SessionHolder sessionHolder, Id id, Map<String, Object> extras) throws RuntimeException, Exception {
+        // return Uni.createFrom().item(getPersistence().selectById(id));
+        Uni<Mutiny.Session> transSession = (Uni<Mutiny.Session>) extras.get("transSession");
+        return transSession.flatMap(Unchecked.function(
+            session -> getReactivePersistence().selectById(session, id)));
     }
 
     @Override
-    public Uni<Integer> add(SessionHolder session, T obj, Map<String, Serializable> extras) throws RuntimeException, Exception {
-        return Uni.createFrom().item(getPersistence().insert(obj));
+    public Uni<Integer> add(SessionHolder sessionHolder, T obj, Map<String, Object> extras) throws RuntimeException, Exception {
+        // return Uni.createFrom().item(getPersistence().insert(obj));
+        Uni<Mutiny.Session> transSession = (Uni<Mutiny.Session>) extras.get("transSession");
+        return transSession.flatMap(Unchecked.function(
+            session -> getReactivePersistence().insert(session, obj)
+        ));
     }
 
     @Override
-    public Uni<Integer> edit(SessionHolder session, T obj, Map<String, Serializable> extras) throws RuntimeException, Exception {
-        return Uni.createFrom().item(getPersistence().update(obj));
+    public Uni<Integer> edit(SessionHolder sessionHolder, T obj, Map<String, Object> extras) throws RuntimeException, Exception {
+        Uni<Mutiny.Session> transSession = (Uni<Mutiny.Session>) extras.get("transSession");
+        return transSession.flatMap(Unchecked.function(
+            session -> getReactivePersistence().update(session, obj)
+        ));
     }
 
     @Override
-    public Uni<Integer> remove(SessionHolder session, Id id, Map<String, Serializable> extras) throws RuntimeException, Exception {
-        return Uni.createFrom().item(getPersistence().delete(id));
+    public Uni<Integer> remove(SessionHolder sessionHolder, Id id, Map<String, Object> extras) throws RuntimeException, Exception {
+        // return Uni.createFrom().item(getPersistence().delete(id));
+        Uni<Mutiny.Session> transSession = (Uni<Mutiny.Session>) extras.get("transSession");
+        return transSession.flatMap(Unchecked.function(
+            session -> getReactivePersistence().delete(session, id)
+        ));
     }
 }
