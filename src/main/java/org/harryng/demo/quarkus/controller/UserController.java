@@ -30,7 +30,7 @@ public class UserController extends AbstractController {
     protected Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GET
-    @Path("/get-username-sync")
+    @Path("/get-username-block")
     @Produces({MediaType.TEXT_PLAIN})
 //    @NonBlocking
     public String getUsernameSync(@QueryParam("id") long id) {
@@ -51,7 +51,7 @@ public class UserController extends AbstractController {
     }
 
     @GET
-    @Path("/get-user-by-id-sync")
+    @Path("/get-user-by-id-block")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 //    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -68,7 +68,7 @@ public class UserController extends AbstractController {
     }
 
     @GET
-    @Path("/get-user-by-id-async")
+    @Path("/get-user-by-id-nonblock")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 //    @Transactional(Transactional.TxType.NOT_SUPPORTED)
