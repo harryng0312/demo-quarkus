@@ -1,24 +1,30 @@
 package org.harryng.demo.quarkus.base.entity;
 
-
 import java.io.Serializable;
 
-public abstract class AbstractEntity<Id extends Serializable> implements BaseEntity<Id>{
-    private Id id;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
+public abstract class AbstractEntity<Tid extends Serializable> implements BaseEntity<Tid>{
+    private Tid id;
 
     protected AbstractEntity(){}
 
-    protected AbstractEntity(Id id){
+    protected AbstractEntity(Tid id){
         this.id = id;
     }
 
     @Override
-    public Id getId() {
+    @Id
+    @Column(name = "id_")
+    public Tid getId() {
         return id;
     }
 
     @Override
-    public void setId(Id id) {
+    public void setId(Tid id) {
         this.id = id;
     }
 }

@@ -1,7 +1,7 @@
 package org.harryng.demo.quarkus.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.quarkus.logging.Log;
+
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
@@ -16,6 +16,8 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import java.util.Collections;
 
 @ApplicationScoped
@@ -70,23 +72,27 @@ public class UserController extends AbstractController {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 //    @Transactional(Transactional.TxType.NOT_SUPPORTED)
-    public Uni<String> getUserByIdAsync(@QueryParam("id") long id) {
-        Uni<String> rs = Uni.createFrom().item("{}");
+    public Uni<Response> getUserByIdAsync(@QueryParam("id") long id) {
+        Uni<Response> rs = Uni.createFrom().item(Response.status(Status.NOT_FOUND).build());
         try {
             rs = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap())
                     .flatMap(Unchecked.function(user -> {
                         String val = "{}";
+                        Response result = null;;
                         try {
                             if (user != null) {
                                 val = getObjectMapper().writeValueAsString(user);
+                                result = Response.ok().entity(val).build();
                             } else {
-//                                throw new NotFoundException();
-                                throw new ClientErrorException(Response.Status.NOT_FOUND);
+                                // throw new NotFoundException();
+                                // throw new ClientErrorException(Response.Status.NOT_FOUND);
+                                result = Response.status(Status.NOT_FOUND).build();
                             }
                         } catch (JsonProcessingException e) {
+                            result = Response.status(Status.INTERNAL_SERVER_ERROR).build();
                             logger.error("", e);
                         }
-                        return Uni.createFrom().item(val);
+                        return Uni.createFrom().item(result);
                     }));
         } catch (Exception e) {
             logger.error("", e);

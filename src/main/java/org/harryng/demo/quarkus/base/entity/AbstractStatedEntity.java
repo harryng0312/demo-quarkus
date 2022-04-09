@@ -3,6 +3,11 @@ package org.harryng.demo.quarkus.base.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
 public abstract class AbstractStatedEntity<Id extends Serializable> extends AbstractEntity<Id> implements BaseStatedEntity{
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
@@ -18,6 +23,8 @@ public abstract class AbstractStatedEntity<Id extends Serializable> extends Abst
     }
 
     @Override
+    @Basic
+    @Column(name = "created_date")
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
@@ -28,6 +35,8 @@ public abstract class AbstractStatedEntity<Id extends Serializable> extends Abst
     }
 
     @Override
+    @Basic
+    @Column(name = "modified_date")
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
@@ -38,6 +47,8 @@ public abstract class AbstractStatedEntity<Id extends Serializable> extends Abst
     }
 
     @Override
+    @Basic
+    @Column(name = "status")
     public String getStatus() {
         return status;
     }

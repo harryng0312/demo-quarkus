@@ -3,6 +3,11 @@ package org.harryng.demo.quarkus.user.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="user_")
 public class UserImpl extends UserModel {
 
     public UserImpl(){super();}

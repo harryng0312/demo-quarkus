@@ -1,14 +1,14 @@
 CREATE TABLE user_
 (
     id_                     bigint        not null,
-    created_date            datetime      not null,
-    modified_date           datetime      not null,
-    status                  varchar2(36)  not null,
-    screenname              varchar2(36)  not null,
-    username                varchar2(36)  not null,
-    password_               varchar2(100) not null,
+    created_date            timestamp      not null,
+    modified_date           timestamp      not null,
+    status                  varchar(36)  not null,
+    screenname              varchar(36)  not null,
+    username                varchar(36)  not null,
+    password_               varchar(100) not null,
     dob                     date          not null,
-    passwd_encrypted_method varchar2(50)  not null default '',
+    passwd_encrypted_method varchar(50)  not null default '',
     CONSTRAINT user_pk PRIMARY KEY (id_)
 );
 

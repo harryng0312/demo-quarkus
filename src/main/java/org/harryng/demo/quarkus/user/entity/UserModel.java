@@ -2,10 +2,13 @@ package org.harryng.demo.quarkus.user.entity;
 
 import org.harryng.demo.quarkus.base.entity.AbstractStatedEntity;
 
-import javax.xml.bind.annotation.XmlType;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
 public class UserModel extends AbstractStatedEntity<Long> {
 
     private String username = "";
@@ -26,6 +29,8 @@ public class UserModel extends AbstractStatedEntity<Long> {
         this.passwdEncryptedMethod = passwdEncryptedMethod;
     }
 
+    @Basic
+    @Column(name = "username")
     public String getUsername() {
         return username;
     }
@@ -34,6 +39,8 @@ public class UserModel extends AbstractStatedEntity<Long> {
         this.username = username;
     }
 
+    @Basic
+    @Column(name = "password_")
     public String getPassword() {
         return password;
     }
@@ -42,6 +49,8 @@ public class UserModel extends AbstractStatedEntity<Long> {
         this.password = password;
     }
 
+    @Basic
+    @Column(name = "screenname")
     public String getScreenName() {
         return screenName;
     }
@@ -50,6 +59,8 @@ public class UserModel extends AbstractStatedEntity<Long> {
         this.screenName = screenName;
     }
 
+    @Basic
+    @Column(name = "dob")
     public LocalDate getDob() {
         return dob;
     }
@@ -58,6 +69,8 @@ public class UserModel extends AbstractStatedEntity<Long> {
         this.dob = dob;
     }
 
+    @Basic
+    @Column(name = "passwd_encrypted_method")
     public String getPasswdEncryptedMethod() {
         return passwdEncryptedMethod;
     }

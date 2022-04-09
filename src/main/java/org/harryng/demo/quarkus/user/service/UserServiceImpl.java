@@ -1,9 +1,13 @@
 package org.harryng.demo.quarkus.user.service;
 
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
+
+import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
+import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
@@ -26,15 +30,26 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Inject
     protected UserPersistence userPersistence;
 
+    @Inject
+    protected UserReactivePersistence userReactivePersistence;
+
     @Override
     public UserPersistence getPersistence() {
         return this.userPersistence;
     }
 
     @Override
+    public BaseSearchableReactivePersistence<Long, UserImpl> getReactivePersistence() {
+        return this.userReactivePersistence;
+    }
+    
+    @Override
     public Uni<UserImpl> getById(SessionHolder session, Long id, Map<String, Serializable> extras) throws RuntimeException, Exception {
 //        var user = getPersistence().selectById(id);
-        return Uni.createFrom().item((UserImpl) null);
+        return sessionFactory.withTransaction(Unchecked.function(sess -> {
+            return getReactivePersistence().selectById(sess, id);
+        }));
+        // return Uni.createFrom().item((UserImpl) null);
     }
 
     @Override

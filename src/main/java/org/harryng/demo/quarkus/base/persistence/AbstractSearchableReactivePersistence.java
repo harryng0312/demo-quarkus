@@ -1,14 +1,13 @@
 package org.harryng.demo.quarkus.base.persistence;
 
-import io.smallrye.mutiny.Uni;
+import java.io.Serializable;
+import java.util.Map;
+
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
-import org.harryng.demo.quarkus.util.persistence.PersistenceUtil;
 
-import javax.persistence.LockModeType;
-import java.io.Serializable;
-import java.util.Map;
+import io.smallrye.mutiny.Uni;
 
 public abstract class AbstractSearchableReactivePersistence<Id extends Serializable, T extends BaseEntity<Id>>
         extends AbstractReactivePersistence<Id, T> implements BaseSearchableReactivePersistence<Id, T> {

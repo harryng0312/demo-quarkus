@@ -3,6 +3,7 @@ package org.harryng.demo.quarkus.base.service;
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchablePersistence;
+import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
@@ -17,6 +18,9 @@ public abstract class AbstractSearchableService<Id extends Serializable, T exten
 
     @Override
     public abstract BaseSearchablePersistence<Id, T> getPersistence();
+
+    @Override
+    public abstract BaseSearchableReactivePersistence<Id, T> getReactivePersistence();
 
     @Override
     public long findByConditions(

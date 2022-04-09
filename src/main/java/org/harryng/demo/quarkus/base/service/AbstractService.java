@@ -5,15 +5,14 @@ import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
 import org.harryng.demo.quarkus.base.persistence.BasePersistence;
+import org.harryng.demo.quarkus.base.persistence.BaseReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Optional;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public abstract class AbstractService<Id extends Serializable, T extends AbstractEntity<Id>> implements BaseService<Id, T> {
@@ -26,6 +25,9 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
 
     @Override
     public abstract BasePersistence<Id, T> getPersistence();
+
+    @Override
+    public abstract BaseReactivePersistence<Id, T> getReactivePersistence();
 
     @Override
     public Uni<T> getById(SessionHolder session, Id id, Map<String, Serializable> extras) throws RuntimeException, Exception {
