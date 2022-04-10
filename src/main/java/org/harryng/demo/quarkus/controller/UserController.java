@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
+import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -55,7 +56,7 @@ public class UserController extends AbstractController {
 
     @GET
     @Path("/get-user-by-id-block")
-    public UserImpl getUserByIdSync(@QueryParam("id") long id) {
+    public UserImpl getUserByIdBlock(@QueryParam("id") long id) {
         UserImpl rs = null;
         try {
             var opt = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap());
@@ -68,32 +69,35 @@ public class UserController extends AbstractController {
 
     @GET
     @Path("/get-user-by-id-nonblock")
-    public Uni<Response> getUserByIdAsync(@QueryParam("id") long id) {
-        Uni<Response> rs = Uni.createFrom().item(Response.status(Status.NOT_FOUND).build());
-        try {
-            rs = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap())
-                    .flatMap(Unchecked.function(user -> {
-                        String val = "{}";
-                        Response result = null;;
-                        try {
-                            if (user != null) {
-                                val = getObjectMapper().writeValueAsString(user);
-                                result = Response.ok().entity(val).build();
-                            } else {
-                                // throw new NotFoundException();
-                                // throw new ClientErrorException(Response.Status.NOT_FOUND);
-                                result = Response.status(Status.NOT_FOUND).build();
+    public Uni<Response> getUserByIdNonBlock(@QueryParam("id") long id) {
+        return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) -> {
+            Uni<Response> rs = Uni.createFrom().item(Response.status(Status.NOT_FOUND).build());
+            try {
+                rs = userService.getById(SessionHolder.createAnonymousSession(), id, 
+                        Collections.singletonMap(BaseService.TRANS_STATELESS_SESSION, session))
+                        .flatMap(Unchecked.function(user -> {
+                            String val = "{}";
+                            Response result = null;;
+                            try {
+                                if (user != null) {
+                                    val = getObjectMapper().writeValueAsString(user);
+                                    result = Response.ok().entity(val).build();
+                                } else {
+                                    // throw new NotFoundException();
+                                    // throw new ClientErrorException(Response.Status.NOT_FOUND);
+                                    result = Response.status(Status.NOT_FOUND).build();
+                                }
+                            } catch (JsonProcessingException e) {
+                                result = Response.status(Status.INTERNAL_SERVER_ERROR).build();
+                                logger.error("", e);
                             }
-                        } catch (JsonProcessingException e) {
-                            result = Response.status(Status.INTERNAL_SERVER_ERROR).build();
-                            logger.error("", e);
-                        }
-                        return Uni.createFrom().item(result);
-                    }));
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-        return rs;
+                            return Uni.createFrom().item(result);
+                        }));
+            } catch (Exception e) {
+                logger.error("", e);
+            }
+            return rs;
+        }));
 //        return vertx.executeBlocking(rs);
     }
     
@@ -101,23 +105,41 @@ public class UserController extends AbstractController {
     @Path("/add-user-nonblock")
     public Uni<Response> addUserNonBlock(String reqBodyStr) throws RuntimeException, Exception{
         var userImpl = getObjectMapper().readValue(reqBodyStr, UserImpl.class);
-        return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
+        return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) -> {
             logger.info("controller transSession:" + session.hashCode());
             return userService.add(
                 SessionHolder.createAnonymousSession(), userImpl, 
-                Collections.singletonMap("transSession", session));
+                Collections.singletonMap(BaseService.TRANS_STATELESS_SESSION, session));
         })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
     }
 
     @POST
     @Path("/edit-user-nonblock")
     public Uni<Response> editUserNonBlock(String reqBodyStr) throws RuntimeException, Exception{
+        // logger.info("controller sessFact: " + sessionFactory.hashCode());
         var userImpl = getObjectMapper().readValue(reqBodyStr, UserImpl.class);
-        return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
+        // return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
+        //     logger.info("controller transSession:" + session.hashCode());
+        //     return userService.edit(
+        //         SessionHolder.createAnonymousSession(), userImpl, 
+        //         Collections.singletonMap(BaseService.TRANS_SESSION, session));
+        // })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
+        return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) -> {
             logger.info("controller transSession:" + session.hashCode());
             return userService.edit(
                 SessionHolder.createAnonymousSession(), userImpl, 
-                Collections.singletonMap("transSession", session));
+                Collections.singletonMap(BaseService.TRANS_STATELESS_SESSION, session));
+        })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
+    }
+
+    @GET
+    @Path("/remove-user-nonblock")
+    public Uni<Response> removeUserNonBlock(@QueryParam("id") Long userId) throws RuntimeException, Exception{
+        return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
+            logger.info("controller transSession:" + session.hashCode());
+            return userService.remove(
+                SessionHolder.createAnonymousSession(), userId, 
+                Collections.singletonMap(BaseService.TRANS_SESSION, session));
         })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
     }
 }

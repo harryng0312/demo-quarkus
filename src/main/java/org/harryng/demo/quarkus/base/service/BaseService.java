@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.util.Map;
 
 public interface BaseService<Id extends Serializable, T extends BaseEntity<Id>> {
+    public static final String TRANS_SESSION = "transSession";
+    public static final String TRANS_STATELESS_SESSION = "transStatelessSession";
+
     public BasePersistence<Id, T> getPersistence();
     public BaseReactivePersistence<Id, T> getReactivePersistence();
     // public Uni<Mutiny.Session> getTransSession();

@@ -50,15 +50,17 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     public Uni<UserImpl> getById(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
 //        var user = getPersistence().selectById(id);
-        var transSession = (Uni<Mutiny.Session>) extras.get("transSession");
-        return transSession.flatMap(Unchecked.function(
-            session -> getReactivePersistence().selectById(session, id)));
-        // return Uni.createFrom().item((UserImpl) null);
+        // var transSession = (Uni<Mutiny.Session>) extras.get(TRANS_SESSION);
+        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
+        // return transSession.flatMap(Unchecked.function(
+        //     session -> getReactivePersistence().selectById(session, id)));
+        return transSession.get(getReactivePersistence().getEntityClass(), id);
     }
 
     @Override
     public Uni<Integer> add(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        var transSession = (Mutiny.Session) extras.get("transSession");
+        // var transSession = (Mutiny.Session) extras.get("transSession");
+        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         logger.info("service transSession:" + transSession.hashCode());
         return Uni.combine().all().unis(
             Uni.createFrom().item(() -> {
@@ -71,7 +73,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
             //             return Uni.createFrom().item(itm);
             //         }))
             //         .eventually(session::close))),
-            super.add(sessionHolder, user, extras),
+            // super.add(sessionHolder, user, extras),
+            transSession.insert(user),
             Uni.createFrom().item(() -> {
                 // throw new RuntimeException("break trans from item");
                 return -1;
@@ -83,13 +86,33 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        var transSession = (Mutiny.Session) extras.get("transSession");
+        // var transSession = (Mutiny.Session) extras.get(TRANS_SESSION);
+        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         logger.info("service transSession:" + transSession.hashCode());
         return Uni.combine().all().unis(
             Uni.createFrom().item(() -> {
                 return 0;
             }),
-            super.edit(sessionHolder, user, extras),
+            // super.edit(sessionHolder, user, extras),
+            transSession.update(user),
+            Uni.createFrom().item(() -> {
+                // throw new RuntimeException("break trans from item");
+                return -1;
+            // }).call(item -> {
+                // throw new RuntimeException("break trans from call");
+            }))
+            .combinedWith(lsRs ->(Integer)lsRs.get(1));
+    }
+
+    @Override
+    public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
+        var transSession = (Mutiny.Session) extras.get(TRANS_SESSION);
+        logger.info("service transSession:" + transSession.hashCode());
+        return Uni.combine().all().unis(
+            Uni.createFrom().item(() -> {
+                return 0;
+            }),
+            super.remove(sessionHolder, id, extras),
             Uni.createFrom().item(() -> {
                 // throw new RuntimeException("break trans from item");
                 return -1;
