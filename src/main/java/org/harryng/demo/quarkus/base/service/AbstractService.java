@@ -1,7 +1,6 @@
 package org.harryng.demo.quarkus.base.service;
 
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.unchecked.Unchecked;
 
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
