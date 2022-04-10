@@ -12,7 +12,7 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -21,8 +21,8 @@ import javax.ws.rs.core.Response.Status;
 
 import java.util.Collections;
 
-// @ApplicationScoped
-@RequestScoped
+@ApplicationScoped
+// @RequestScoped
 @Path("/user")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -115,7 +115,7 @@ public class UserController extends AbstractController {
     @POST
     @Path("/edit-user-nonblock")
     public Uni<Response> editUserNonBlock(String reqBodyStr) throws RuntimeException, Exception{
-        // logger.info("controller sessFact: " + sessionFactory.hashCode());
+        logger.info("controller sessFact: " + sessionFactory.hashCode());
         var userImpl = getObjectMapper().readValue(reqBodyStr, UserImpl.class);
         // return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
         //     logger.info("controller transSession:" + session.hashCode());

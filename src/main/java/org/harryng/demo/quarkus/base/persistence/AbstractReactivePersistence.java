@@ -53,7 +53,7 @@ public abstract class AbstractReactivePersistence<Id extends Serializable, T ext
     //    @Transactional(Transactional.TxType.SUPPORTS)
     @Override
     public Uni<Integer> update(Mutiny.StatelessSession session, T obj) throws RuntimeException, Exception {
-        // logger.info("persistence sessFact: " + sessionFactory.hashCode());
+        logger.info("persistence sessFact: " + sessionFactory.hashCode());
         var cb = sessionFactory.getCriteriaBuilder();
         var cQuery = cb.createQuery(Long.class);
         var root = cQuery.from(getEntityClass());
