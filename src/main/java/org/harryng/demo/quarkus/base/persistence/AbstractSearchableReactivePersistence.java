@@ -6,6 +6,7 @@ import java.util.Map;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import io.smallrye.mutiny.Uni;
 
@@ -18,8 +19,9 @@ public abstract class AbstractSearchableReactivePersistence<Id extends Serializa
 
     //    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public Uni<Long> countByConditions(
-            String countJpql,
-            Map<String, Serializable> params
+        Mutiny.StatelessSession session,
+        String countJpql,
+        Map<String, Serializable> params
     ) throws RuntimeException, Exception {
 //        return PersistenceUtil.countObjectByQuery(
 //                getEntityManager(),
@@ -31,10 +33,11 @@ public abstract class AbstractSearchableReactivePersistence<Id extends Serializa
 
     //    @Transactional(Transactional.TxType.NOT_SUPPORTED)
     public Uni<Page<T>> selectByConditions(
-            String queryJpql,
-            Map<String, Serializable> params,
-            PageInfo pageInfo,
-            long total
+        Mutiny.StatelessSession session,
+        String queryJpql,
+        Map<String, Serializable> params,
+        PageInfo pageInfo,
+        long total
     ) throws RuntimeException, Exception {
 //        return PersistenceUtil.selectObjectByQuery(
 //                getEntityManager(),

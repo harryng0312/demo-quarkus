@@ -32,27 +32,27 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
     @Override
     public Uni<T> getById(SessionHolder sessionHolder, Id id, Map<String, Object> extras) throws RuntimeException, Exception {
         // return Uni.createFrom().item(getPersistence().selectById(id));
-        Mutiny.Session transSession = (Mutiny.Session) extras.get("transSession");
+        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         return getReactivePersistence().selectById(transSession, id);
     }
 
     @Override
     public Uni<Integer> add(SessionHolder sessionHolder, T obj, Map<String, Object> extras) throws RuntimeException, Exception {
         // return Uni.createFrom().item(getPersistence().insert(obj));
-        Mutiny.Session transSession = (Mutiny.Session) extras.get(TRANS_SESSION);
+        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         return getReactivePersistence().insert(transSession, obj);
     }
 
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, T obj, Map<String, Object> extras) throws RuntimeException, Exception {
-        Mutiny.Session transSession = (Mutiny.Session) extras.get(TRANS_SESSION);
+        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         return getReactivePersistence().update(transSession, obj);
     }
 
     @Override
     public Uni<Integer> remove(SessionHolder sessionHolder, Id id, Map<String, Object> extras) throws RuntimeException, Exception {
         // return Uni.createFrom().item(getPersistence().delete(id));
-        Mutiny.Session transSession = (Mutiny.Session) extras.get(TRANS_SESSION);
+        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         return getReactivePersistence().delete(transSession, id);
     }
 }
