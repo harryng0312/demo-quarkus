@@ -108,4 +108,16 @@ public class UserController extends AbstractController {
                 Collections.singletonMap("transSession", session));
         })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
     }
+
+    @POST
+    @Path("/edit-user-nonblock")
+    public Uni<Response> editUserNonBlock(String reqBodyStr) throws RuntimeException, Exception{
+        var userImpl = getObjectMapper().readValue(reqBodyStr, UserImpl.class);
+        return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
+            logger.info("controller transSession:" + session.hashCode());
+            return userService.edit(
+                SessionHolder.createAnonymousSession(), userImpl, 
+                Collections.singletonMap("transSession", session));
+        })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
+    }
 }
