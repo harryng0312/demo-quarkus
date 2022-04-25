@@ -1,13 +1,47 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import {RouterView} from 'vue-router'
+// import {onMounted, onUnmounted} from "vue";
+// onMounted(() => {
+//   console.log(`App mounted`);
+// });
+// onUnmounted(() => {
+//   alert(`Unmounted`);
+// });
 </script>
 
+<script lang="ts">
+import {defineComponent} from "vue";
+
+export default defineComponent({
+  data(){
+    return {
+
+    };
+  },
+  created() {
+    console.log(`created`);
+  },
+  mounted() {
+    window.addEventListener('beforeunload', this.beforeUnload);
+    console.log(`mount`);
+  },
+  unmounted() {
+    console.log(`unmounted`);
+  },
+  methods:{
+    beforeUnload: (evt: Event) => {
+      console.log(`Unload...`);
+      return "Unload?";
+    }
+  },
+});
+</script>
 <template>
-  <RouterView />
+  <RouterView/>
 </template>
 
 <style>
-@import '@/assets/base.css';
+@import './assets/base.css';
 
 #app {
   max-width: 1280px;

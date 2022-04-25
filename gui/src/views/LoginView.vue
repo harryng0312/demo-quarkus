@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent} from "vue";
-import {getTokenStore} from "@/stores/counter";
+import {getStore} from "@/stores/counter";
 
 export default defineComponent({
   data(){
@@ -13,8 +13,8 @@ export default defineComponent({
     login(evt: Event) {
       console.log(`Stack size: ${this.$router.getRoutes().length}`);
       if(this.username !== ""){
-        let token = getTokenStore().token;
-        getTokenStore().token = this.username;
+        let token = getStore().session.token;
+        getStore().session.token = this.username;
         this.$router.push("/");
       }
     },

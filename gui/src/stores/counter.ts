@@ -1,5 +1,5 @@
-import {defineStore} from 'pinia'
 import type {StoreDefinition} from "pinia";
+import {defineStore} from 'pinia'
 // const useCounterStore = defineStore({
 //   id: 'counter',
 //   state: () => ({
@@ -16,27 +16,53 @@ import type {StoreDefinition} from "pinia";
 // });
 
 export class SessionState {
-    private token: string;
+    private _token: string = "";
+    private _username: string = "";
 
-    constructor(token: string) {
-        this.token = token;
+    constructor(ss: { token: string, username: string }) {
+        this._token = ss.token;
+        this._username = ss.username;
     }
 
-    public getToken(): string {
-        return this.token;
+    get token(): string {
+        return this._token;
+    }
+
+    set token(value: string) {
+        this._token = value;
+    }
+
+    get username(): string {
+        return this._username;
+    }
+
+    set username(value: string) {
+        this._username = value;
     }
 }
 
-const getTokenStore: StoreDefinition = defineStore({
+export class StoredState {
+    private readonly _session: SessionState;
+
+    constructor(ss: { session: SessionState }
+    ) {
+        this._session = ss.session;
+    }
+
+    get session(): SessionState {
+        return this._session;
+    }
+}
+
+const getStore: StoreDefinition<string, StoredState> = defineStore({
     id: "token",
-    state: () => ({
-        token: "",
-    }),
-    // state: () => new SessionState(""),
-    getters: {
-        token: (that) => that.token,
+    state: () => <StoredState>{
+        session: <SessionState>{
+            token: "",
+            username: ""
+        },
     },
     actions: {}
 });
 // export {useCounterStore, getTokenStore};
-export {getTokenStore};
+export {getStore};

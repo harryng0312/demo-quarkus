@@ -12,5 +12,4 @@ import About from "@/components/About.vue";
 </template>
 
 <style>
-
 </style>

@@ -3,12 +3,12 @@ import {RouterLink} from 'vue-router';
 </script>
 
 <script lang="ts">
+import {defineComponent} from "vue";
 
-
-export default {
+export default defineComponent({
   name: "HomeLayout",
 
-}
+});
 </script>
 
 <template>
@@ -24,7 +24,7 @@ export default {
   <slot name="body"/>
 </template>
 <style scoped>
-@import '@/assets/base.css';
+@import '../assets/base.css';
 
 #app {
   max-width: 1280px;

@@ -1,8 +1,8 @@
-import { createI18n } from "vue-i18n";
+import {createI18n} from "vue-i18n";
 import enMessage from "./enMessage.json";
 import viMessage from "./viMessage.json";
 
-const messages = {
+const messages: Record<string, any> = {
     "en": enMessage,
     "vi": viMessage
 };
