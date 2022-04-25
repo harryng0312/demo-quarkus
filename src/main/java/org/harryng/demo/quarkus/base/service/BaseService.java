@@ -13,6 +13,7 @@ import java.util.Map;
 public interface BaseService<Id extends Serializable, T extends BaseEntity<Id>> {
     public static final String TRANS_SESSION = "transSession";
     public static final String TRANS_STATELESS_SESSION = "transStatelessSession";
+    public static final String TRANSACTION = "transaction";
 
     public BasePersistence<Id, T> getPersistence();
     public BaseReactivePersistence<Id, T> getReactivePersistence();
