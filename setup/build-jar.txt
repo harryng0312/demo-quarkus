@@ -1,0 +1,2 @@
+build production:
+build -x check -x javadoc -Dquarkus.package.type=uber-jar -Dquarkus.profile=prod
