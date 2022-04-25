@@ -38,4 +38,4 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, n
   }
 });
 
-export default router
+export default router;
