@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
+import type {NavigationGuardNext, RouteLocationNormalized} from "vue-router";
 import {isAuthenticated} from "@/ts/Authentication";
 import HomeView from '@/views/HomeView.vue';
 import LoginView from '@/views/LoginView.vue';
@@ -29,7 +30,7 @@ const router = createRouter({
     }
   ]
 });
-router.beforeEach((to, from, next)=>{
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext)=>{
   if(to.name !== "login" && !isAuthenticated(to, from)){
     next({name:"login"});
   }else{

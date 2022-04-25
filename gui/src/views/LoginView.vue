@@ -1,7 +1,8 @@
 <script lang="ts">
+import {defineComponent} from "vue";
 import {getTokenStore} from "@/stores/counter";
 
-export default {
+export default defineComponent({
   data(){
     return {
       username: "",
@@ -18,7 +19,7 @@ export default {
       }
     },
   },
-}
+});
 </script>
 
 <template>
