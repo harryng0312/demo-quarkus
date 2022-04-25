@@ -27,11 +27,14 @@ export class SessionState {
     }
 }
 
-const getTokenStore: StoreDefinition = defineStore<string, SessionState>({
+const getTokenStore: StoreDefinition = defineStore({
     id: "token",
-    state: () => new SessionState(""),
+    state: () => ({
+        token: "",
+    }),
+    // state: () => new SessionState(""),
     getters: {
-        token: (that) => that.getToken(),
+        token: (that) => that.token,
     },
     actions: {}
 });
