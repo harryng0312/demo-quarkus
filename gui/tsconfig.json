@@ -12,7 +12,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "npm:": "node_modules"
     }
   },
 

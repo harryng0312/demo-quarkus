@@ -1,9 +1,10 @@
 <script lang="ts">
 import {defineComponent} from "vue";
-import {getStore} from "@/stores/counter";
+import {getStore} from "@/stores";
+import {SOCK_RESPONSE_ENDPOINT} from "@/ts/common/Communication";
 
 export default defineComponent({
-  data(){
+  data() {
     return {
       username: "",
       password: ""
@@ -12,10 +13,17 @@ export default defineComponent({
   methods: {
     login(evt: Event) {
       console.log(`Stack size: ${this.$router.getRoutes().length}`);
-      if(this.username !== ""){
-        let token = getStore().session.token;
-        getStore().session.token = this.username;
-        this.$router.push("/");
+      let socket = getStore().connection.webSocket;
+      socket.connect({}, (frame) => {
+        socket.subscribe(SOCK_RESPONSE_ENDPOINT, (msg) => {
+          console.log(`Response:${JSON.parse(msg.body)}`);
+        });
+      }, (error) => {
+        console.log(`Error:${JSON.parse(error.body)}`);
+      })
+      if (this.username !== "") {
+        // let socket = createWebsocket();
+        // this.$router.push("/");
       }
     },
   },

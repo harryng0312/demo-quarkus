@@ -1,5 +1,7 @@
 import type {StoreDefinition} from "pinia";
 import {defineStore} from 'pinia'
+import {createWebsocket} from "@/ts/common/Communication";
+import {Client} from "stompjs";
 // const useCounterStore = defineStore({
 //   id: 'counter',
 //   state: () => ({
@@ -41,6 +43,16 @@ export class SessionState {
     }
 }
 
+export class ConnectionState {
+    private _webSocket: Client;
+    public get webSocket() {
+        if(this._webSocket == null){
+            this._webSocket = createWebsocket();
+        }
+        return this._webSocket;
+    }
+}
+
 export class StoredState {
     private readonly _session: SessionState;
 
@@ -61,6 +73,7 @@ const getStore: StoreDefinition<string, StoredState> = defineStore({
             token: "",
             username: ""
         },
+        connection:<ConnectionState>{}
     },
     actions: {}
 });

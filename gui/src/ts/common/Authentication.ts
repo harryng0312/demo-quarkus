@@ -1,10 +1,15 @@
 import type {RouteLocationNormalized} from "vue-router";
-// import $ from "@types/jquery";
-import $cookie from "@types/jquery.cookie";
-import {getStore} from "@/stores/counter";
+import type {CookieOptions} from "cookie-storage/lib/cookie-options";
+import {CookieStorage} from 'cookie-storage';
+import {getStore} from "@/stores";
+
 // import $ = require("jquery");
 
-const COOKIE_TOKEN="token";
+const COOKIE_TOKEN = "token";
+const COOKIE_TIMEOUT = 2 * 60 * 1000;
+const cookieStorage = new CookieStorage(<CookieOptions>{
+    sameSite: "Strict"
+});
 
 function isAuthenticated(to: RouteLocationNormalized, from: RouteLocationNormalized): boolean {
     let token = getStore().session.token;
@@ -13,12 +18,14 @@ function isAuthenticated(to: RouteLocationNormalized, from: RouteLocationNormali
 }
 
 function loadTokenFromCookie(): string {
-    let rs = $cookie(COOKIE_TOKEN);
+    let rs = <string>cookieStorage.getItem(COOKIE_TOKEN);
     return rs;
 }
 
 function saveTokenToCookie(token: string): void {
-    $cookie.cookie(COOKIE_TOKEN, token, <JQueryCookieOptions>{expires: 5/1440, secure: false})
+    let expiredDate = new Date();
+    expiredDate.setDate(expiredDate.getTime() + COOKIE_TIMEOUT);
+    cookieStorage.setItem(COOKIE_TOKEN, token, <CookieOptions>{expires: expiredDate, secure: false});
 }
 
-export { isAuthenticated, loadTokenFromCookie, saveTokenToCookie };
+export {isAuthenticated, loadTokenFromCookie, saveTokenToCookie};
