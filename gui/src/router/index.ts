@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import type {Router} from "vue-router";
 import type {NavigationGuardNext, RouteLocationNormalized} from "vue-router";
-import {isAuthenticated} from "@/ts/Authentication";
+import {isAuthenticated} from "@/ts/common/Authentication";
 import HomeView from '@/views/HomeView.vue';
 import LoginView from '@/views/LoginView.vue';
 
@@ -33,6 +33,9 @@ const router: Router = createRouter({
 });
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext)=>{
   if(to.name !== "login" && !isAuthenticated(to, from)){
+    // load from cookie
+
+    // if not - next to login
     next({name:"login"});
   }else{
     next();
