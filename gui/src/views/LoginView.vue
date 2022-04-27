@@ -2,6 +2,7 @@
 import {defineComponent} from "vue";
 import {getStore} from "@/stores";
 import {SOCK_RESPONSE_ENDPOINT} from "@/ts/common/Communication";
+import type {Client} from "stompjs";
 
 export default defineComponent({
   data() {
@@ -13,15 +14,23 @@ export default defineComponent({
   methods: {
     login(evt: Event) {
       console.log(`Stack size: ${this.$router.getRoutes().length}`);
-      let socket = getStore().connection.webSocket;
-      socket.connect({}, frame => {
-        socket.subscribe(SOCK_RESPONSE_ENDPOINT, (msg) => {
-          console.log(`Response:${JSON.parse(msg.body)}`);
+      let socket: Client = getStore().connection.webSocket;
+      if (!socket.connected) {
+        socket.connect({}, frame => {
+          socket.subscribe(SOCK_RESPONSE_ENDPOINT, (msg) => {
+            console.log(`Response:${JSON.parse(msg.body)}`);
+          });
+          console.log(`Connected:${frame}`);
+          socket.disconnect(() => {
+            console.log(`Socket disconnected`);
+          });
+        }, error => {
+          socket.disconnect(() => {
+            console.log(`Socket disconnected`);
+          });
+          console.log(`Error:${error}`);
         });
-        console.log(`Connected:${frame}`);
-      }, error => {
-        console.log(`Error:${error}`);
-      });
+      }
       if (this.username !== "") {
         // let socket = createWebsocket();
         // this.$router.push("/");

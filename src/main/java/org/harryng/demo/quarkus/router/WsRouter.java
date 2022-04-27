@@ -8,15 +8,14 @@ import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.MediaType;
 
 @ApplicationScoped
-@RouteBase(path = "/http", produces = {MediaType.APPLICATION_JSON})
-public class HttpRouter {
-    static Logger logger = LoggerFactory.getLogger(HttpRouter.class);
+@RouteBase(path = "/ws")
+public class WsRouter {
+    static Logger logger = LoggerFactory.getLogger(WsRouter.class);
     @Route(path = "/*")
     public void handleDefault(RoutingContext context) {
-        logger.info("into /http handler");
+        logger.info("into /ws handler");
         context.next();
     }
 

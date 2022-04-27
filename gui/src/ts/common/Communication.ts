@@ -21,12 +21,14 @@ function sendAjax(url: string, method: string, data: unknown,
     return rs;
 }
 
-function createWebsocket(): Client {
+function openWebsocket(): Client {
+    console.log(`open websocket`);
     let socket: WebSocket = new WebSocket(SOCK_ENDPOINT, ["ws", "wss"]);
     // let client = StompJs.over(socket);
     // let client = new WebSocket(SOCK_ENDPOINT);
     let client = StompJs.over(socket);
+    client.debug = () => {};
     return client;
 }
 
-export {createWebsocket}
+export {openWebsocket}
