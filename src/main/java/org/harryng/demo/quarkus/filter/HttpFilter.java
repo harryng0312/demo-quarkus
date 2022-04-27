@@ -21,7 +21,10 @@ public class HttpFilter {
     @RouteFilter(100)
     public void authFilter(RoutingContext rc) {
         logger.info("auth filter");
-        var session = rc.request().getHeader("token");
+        var tokenCookie = rc.request().getCookie("token");
+        if(tokenCookie != null){
+            var token = tokenCookie.getName();
+        }
         rc.next();
 
     }

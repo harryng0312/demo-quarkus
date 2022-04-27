@@ -46,7 +46,8 @@ public class UserRouter extends AbstractController {
                         .write(Buffer.buffer(getObjectMapper().writeValueAsString(user)))
                         .eventually(v -> exc.response().end())
                 ), ex -> exc.response().setStatusCode(404).end(
-                        String.join("", "{\"code\":", "\"404\"", ",\"message\":\"", ex.getMessage(), "\"}")
+                        String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
+                                ex.getMessage(), "\"}")
                 ));
     }
 

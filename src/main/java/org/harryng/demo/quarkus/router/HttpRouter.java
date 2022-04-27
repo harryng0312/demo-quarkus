@@ -23,6 +23,7 @@ public class HttpRouter {
     @Route(path = "/*", type = Route.HandlerType.FAILURE)
     public void handleError(RoutingContext context){
         logger.error("Error[" + context.response().getStatusCode()+"]:" + context.response().getStatusMessage());
-        context.response().end(context.response().getStatusMessage()).compose(v-> Future.succeededFuture());
+        context.response().end(String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
+                context.response().getStatusMessage(), "\"}")).compose(v-> Future.succeededFuture());
     }
 }

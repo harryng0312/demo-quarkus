@@ -18,8 +18,7 @@ function isAuthenticated(to: RouteLocationNormalized, from: RouteLocationNormali
 }
 
 function loadTokenFromCookie(): string {
-    let rs = <string>cookieStorage.getItem(COOKIE_TOKEN);
-    return rs;
+    return <string>cookieStorage.getItem(COOKIE_TOKEN);
 }
 
 function saveTokenToCookie(token: string): void {
