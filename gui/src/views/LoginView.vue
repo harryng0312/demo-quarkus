@@ -14,13 +14,14 @@ export default defineComponent({
     login(evt: Event) {
       console.log(`Stack size: ${this.$router.getRoutes().length}`);
       let socket = getStore().connection.webSocket;
-      socket.connect({}, (frame) => {
+      socket.connect({}, frame => {
         socket.subscribe(SOCK_RESPONSE_ENDPOINT, (msg) => {
           console.log(`Response:${JSON.parse(msg.body)}`);
         });
-      }, (error) => {
-        console.log(`Error:${JSON.parse(error.body)}`);
-      })
+        console.log(`Connected:${frame}`);
+      }, error => {
+        console.log(`Error:${error}`);
+      });
       if (this.username !== "") {
         // let socket = createWebsocket();
         // this.$router.push("/");

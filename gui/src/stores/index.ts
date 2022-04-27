@@ -1,7 +1,7 @@
 import type {StoreDefinition} from "pinia";
 import {defineStore} from 'pinia'
 import {createWebsocket} from "@/ts/common/Communication";
-import {Client} from "stompjs";
+import type {Client} from "stompjs";
 // const useCounterStore = defineStore({
 //   id: 'counter',
 //   state: () => ({
@@ -44,36 +44,43 @@ export class SessionState {
 }
 
 export class ConnectionState {
-    private _webSocket: Client;
-    public get webSocket() {
-        if(this._webSocket == null){
-            this._webSocket = createWebsocket();
-        }
+    private readonly _webSocket: Client;
+
+    constructor(cs: { webSocket: Client }) {
+        this._webSocket = cs.webSocket;
+    }
+
+    public get webSocket(): Client {
         return this._webSocket;
     }
 }
 
 export class StoredState {
     private readonly _session: SessionState;
+    private readonly _connection: ConnectionState;
 
-    constructor(ss: { session: SessionState }
-    ) {
+    constructor(ss: { session: SessionState, connection: ConnectionState }) {
         this._session = ss.session;
+        this._connection = ss.connection;
     }
 
     get session(): SessionState {
         return this._session;
     }
+
+    get connection(): ConnectionState {
+        return this._connection;
+    }
 }
 
-const getStore: StoreDefinition<string, StoredState> = defineStore({
+const getStore = <StoreDefinition<string, StoredState>>defineStore({
     id: "token",
     state: () => <StoredState>{
         session: <SessionState>{
             token: "",
             username: ""
         },
-        connection:<ConnectionState>{}
+        connection: new ConnectionState({webSocket: createWebsocket()}),
     },
     actions: {}
 });

@@ -3,16 +3,12 @@ import $ from "jquery";
 import StompJs, {Client} from "stompjs"
 
 
-export const SOCK_ENDPOINT = "ws://" + window.location.host + ":8080/ws";
+export const SOCK_ENDPOINT = "ws://" + window.location.hostname + ":8080/ws";
 export const SOCK_RESPONSE_ENDPOINT = SOCK_ENDPOINT + "/response";
 
-function openWebsocket(path: string): void {
-
-}
-
 function sendAjax(url: string, method: string, data: unknown,
-                  callback: { success: Parameters<any>, error: Parameters<any>, complete: Parameters<any> }): Promise<number> {
-    let rs = new Promise<number>(() => {
+                  callback: { success: unknown, error?: unknown, complete?: unknown }): Promise<void> {
+    let rs = new Promise<void>(() => {
         $.ajax(<JQuery.AjaxSettings>{
             url: url,
             method: method,
@@ -33,4 +29,4 @@ function createWebsocket(): Client {
     return client;
 }
 
-export {openWebsocket, createWebsocket}
+export {createWebsocket}
