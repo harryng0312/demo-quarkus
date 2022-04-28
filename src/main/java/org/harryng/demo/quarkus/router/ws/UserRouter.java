@@ -8,7 +8,6 @@ import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
