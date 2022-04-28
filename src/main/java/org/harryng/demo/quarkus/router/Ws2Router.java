@@ -25,8 +25,8 @@ import java.util.Arrays;
 
 @ApplicationScoped
 @RouteBase(path = "/ws")
-public class WsRouter extends AbstractController {
-    static Logger logger = LoggerFactory.getLogger(WsRouter.class);
+public class Ws2Router extends AbstractController {
+    static Logger logger = LoggerFactory.getLogger(Ws2Router.class);
 
     @Inject
     protected BeanManager beanManager;
