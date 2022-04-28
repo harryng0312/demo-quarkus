@@ -34,7 +34,7 @@ public class MapperRouter extends AbstractRouter {
         var creationalContext = beanManager.createCreationalContext(proxiedBean);
         var bean = beanManager.getReference(proxiedBean,
                 proxiedBean.getBeanClass(), creationalContext);
-        var method = Arrays.stream(proxiedBean.getBeanClass().getMethods())
+        var method = Arrays.stream(proxiedBean.getBeanClass().getDeclaredMethods())
                 .filter(m -> m.getName().equals(methodArr[1]))
                 .findFirst().orElseThrow();
         paramsClassMap.put(bizMethodKey, method.getParameterTypes());
