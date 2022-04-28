@@ -34,10 +34,10 @@ public class MapperRouter extends AbstractRouter {
         var creationalContext = beanManager.createCreationalContext(proxiedBean);
         var bean = beanManager.getReference(proxiedBean,
                 proxiedBean.getBeanClass(), creationalContext);
-        var methods = Arrays.stream(bean.getClass().getMethods())
+        var method = Arrays.stream(proxiedBean.getBeanClass().getMethods())
                 .filter(m -> m.getName().equals(methodArr[1]))
-                .toList();
-        paramsClassMap.put(bizMethodKey, methods.get(methods.size() - 1).getParameterTypes());
+                .findFirst().orElseThrow();
+        paramsClassMap.put(bizMethodKey, method.getParameterTypes());
         beanMap.putIfAbsent(methodArr[0], bean);
         return (T) bean;
     }
