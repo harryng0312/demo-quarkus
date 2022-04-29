@@ -80,11 +80,7 @@ class ConnectionState {
 interface StoredState {
     get session(): SessionState;
 
-    set session(sess: SessionState);
-
     get connection(): ConnectionState;
-
-    set connection(conn: ConnectionState);
 }
 
 // class GetterState {
