@@ -11,14 +11,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Singleton
-public class MapperRouter extends AbstractRouter {
+public abstract class AbstractMapperRouter extends AbstractRouter {
     protected final Map<String, Object> beanMap = new LinkedHashMap<>();
     protected final Map<String, Function<Object[], ?>> methodMap = new LinkedHashMap<>();
     protected final Map<String, String> methodNameMap = new LinkedHashMap<>();
@@ -47,17 +45,9 @@ public class MapperRouter extends AbstractRouter {
         return (T) beanMap.get(methodArr[0]);
     }
 
-    protected void initMethodName() {
-        methodNameMap.put("addUser", "userService.add");
-        methodNameMap.put("getUserById", "userService.getById");
-    }
+    protected abstract void initMethodName();
 
-    protected void initMethodMap() {
-        methodMap.put("addUser", Unchecked.function(params -> this.<UserService>getBean(methodNameMap.get("addUser"))
-                .add((SessionHolder) params[0], (UserImpl) params[1], (Map<String, Object>) params[2])));
-        methodMap.put("getUserById", Unchecked.function(params -> this.<UserService>getBean(methodNameMap.get("getUserById"))
-                .getById((SessionHolder) params[0], (long) params[1], (Map<String, Object>) params[2])));
-    }
+    protected abstract void initMethodMap();
 
     protected void initBeans() {
         for (Map.Entry<String, String> entry : methodNameMap.entrySet()) {

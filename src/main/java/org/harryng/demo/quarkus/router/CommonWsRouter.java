@@ -1,7 +1,6 @@
 package org.harryng.demo.quarkus.router;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import io.quarkus.vertx.web.Route;
 import io.quarkus.vertx.web.RouteBase;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -13,12 +12,14 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.harryng.demo.quarkus.base.router.AbstractRouter;
 import org.harryng.demo.quarkus.base.service.BaseService;
-import org.harryng.demo.quarkus.router.ws.MapperRouter;
+import org.harryng.demo.quarkus.router.ws.AbstractMapperRouter;
+import org.harryng.demo.quarkus.router.ws.MethodMapperRouter;
 import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class CommonWsRouter extends AbstractRouter {
     static Logger logger = LoggerFactory.getLogger(CommonWsRouter.class);
 
     @Inject
-    protected MapperRouter mapperRouter;
+    protected MethodMapperRouter mapperRouter;
 
     protected String getMethodId(JsonObject rootJson) {
         return rootJson.getString("method");
@@ -130,7 +131,7 @@ public class CommonWsRouter extends AbstractRouter {
                 .compose(ReactiveUtil.defaultSuccessFunction(), ReactiveUtil.defaultFailureFunction());
     }
 
-    @Route(path = "/*", type = Route.HandlerType.FAILURE)
+    @Route(path = "/*", type = Route.HandlerType.FAILURE, order = 50)
     public void handleError(RoutingContext ctx) {
         logger.error("Error[" + ctx.response().getStatusCode() + "]:" + ctx.response().getStatusMessage());
         ctx.response().end(ctx.response().getStatusMessage()).compose(v -> Future.succeededFuture());
