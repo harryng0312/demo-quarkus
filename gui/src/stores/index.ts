@@ -1,4 +1,4 @@
-import type {StoreDefinition} from "pinia";
+import type {DefineStoreOptions, StateTree, StoreDefinition} from "pinia";
 import {defineStore} from 'pinia'
 import {openWebsocket} from "@/ts/common/Communication";
 import type {Client} from "stompjs";
@@ -18,13 +18,13 @@ import type {Client} from "stompjs";
 //   }
 // });
 
-export class SessionState {
+class SessionState {
     private _token: string = "";
     private _username: string = "";
 
-    constructor(ss: { token: string, username: string }) {
-        this._token = ss.token;
-        this._username = ss.username;
+    constructor(payload: Required<SessionState>) {
+        this._token = payload.token;
+        this._username = payload.username;
     }
 
     get token(): string {
@@ -44,7 +44,7 @@ export class SessionState {
     }
 }
 
-export class ConnectionState {
+class ConnectionState {
     private _webSocket: Client | null = null;
 
     public get webSocket(): Client {
@@ -59,51 +59,91 @@ export class ConnectionState {
     }
 }
 
-export class StoredState {
-    private readonly _session: SessionState;
-    private readonly _connection: ConnectionState;
+// class StoredState {
+//     private readonly _session: SessionState;
+//     private readonly _connection: ConnectionState;
+//
+//     constructor(ss: { session: SessionState, connection: ConnectionState }) {
+//         this._session = ss.session;
+//         this._connection = ss.connection;
+//     }
+//
+//     get session(): SessionState {
+//         return this._session;
+//     }
+//
+//     get connection(): ConnectionState {
+//         return this._connection;
+//     }
+// }
 
-    constructor(ss: { session: SessionState, connection: ConnectionState }) {
-        this._session = ss.session;
-        this._connection = ss.connection;
-    }
+interface StoredState {
+    get session(): SessionState;
 
-    get session(): SessionState {
-        return this._session;
-    }
-
-    get connection(): ConnectionState {
-        return this._connection;
-    }
+    get connection(): ConnectionState;
 }
 
-const getStore = <StoreDefinition<string, StoredState>>defineStore({
-    id: "token",
-    // state: () => <StoredState>{
-    //     session: <SessionState>{
-    //         token: "",
-    //         username: ""
-    //     },
-    //     connection: new ConnectionState(),
-    // },
-    state: () => {
-        return {
-            session: new SessionState({
-                token: "",
-                username: ""
-            }),
-            connection: new ConnectionState(),
+// class GetterState {
+//     public session(state: StoredState): SessionState {
+//         return state.session;
+//     }
+//
+//     public connection(state: StoredState): ConnectionState {
+//         console.log(`getConnection`);
+//         return state.connection;
+//     }
+// }
+
+interface GetterState {
+    sessionState(state: StoredState): SessionState;
+
+    connectionState(state: StoredState): ConnectionState;
+}
+
+interface MethodState {
+    printTest(): void;
+}
+
+// const getStore = <StoreDefinition<string, StoredState, GetterState, MethodState>>defineStore({
+//     id: "token",
+//     state: () => {
+//         return {
+//             session: new SessionState({
+//                 token: "",
+//                 username: ""
+//             }),
+//             connection: new ConnectionState(),
+//         };
+//     },
+//     // getters: {},
+//     // actions: {},
+// });
+
+const getStore = <StoreDefinition<string, StoredState, GetterState, MethodState>>defineStore({
+    id: "main",
+    state: (): StoredState => (<StoredState>{
+        session: new SessionState({
+            token: "{}",
+            username: "anonymous"
+        }),
+        connection: new ConnectionState(),
+    }),
+    actions: {
+        printTest(): void {
+            console.log(`print test ${this.session}`);
         }
-    },
-    actions: {},
+    }
+
 });
 
-const getStateless = () => { return new StoredState({
-    session: new SessionState({
-        token: "",
-        username: "",
-    }),
-    connection: new ConnectionState(),
-});};
+// const getStateless = () => {
+//     return new StoredState({
+//         session: new SessionState({
+//             token: "",
+//             username: "",
+//         }),
+//         connection: new ConnectionState(),
+//     });
+// };
 // export {useCounterStore, getTokenStore};
 export {getStore};
