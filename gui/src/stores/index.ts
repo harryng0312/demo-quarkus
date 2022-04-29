@@ -95,9 +95,9 @@ interface StoredState {
 // }
 
 interface GetterState {
-    sessionState(state: StoredState): SessionState;
+    session(state: StoredState): SessionState;
 
-    connectionState(state: StoredState): ConnectionState;
+    connection(state: StoredState): ConnectionState;
 }
 
 interface MethodState {
