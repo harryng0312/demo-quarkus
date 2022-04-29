@@ -2,7 +2,7 @@ import type {StoreDefinition} from "pinia";
 import {defineStore} from 'pinia'
 import {openWebsocket} from "@/ts/common/Communication";
 import type {Client} from "stompjs";
-import {computed} from "vue";
+// import {computed} from "vue";
 // const useCounterStore = defineStore({
 //   id: 'counter',
 //   state: () => ({
@@ -48,7 +48,7 @@ export class ConnectionState {
     private _webSocket: Client | null = null;
 
     public get webSocket(): Client {
-        if(this._webSocket == null || !this._webSocket.connected){
+        if (this._webSocket == null || !this._webSocket.connected) {
             this._webSocket = openWebsocket();
         }
         return this._webSocket;
@@ -79,14 +79,31 @@ export class StoredState {
 
 const getStore = <StoreDefinition<string, StoredState>>defineStore({
     id: "token",
-    state: () => <StoredState>{
-        session: <SessionState>{
-            token: "",
-            username: ""
-        },
-        connection: new ConnectionState(),
+    // state: () => <StoredState>{
+    //     session: <SessionState>{
+    //         token: "",
+    //         username: ""
+    //     },
+    //     connection: new ConnectionState(),
+    // },
+    state: () => {
+        return {
+            session: new SessionState({
+                token: "",
+                username: ""
+            }),
+            connection: new ConnectionState(),
+        }
     },
-    actions: {}
+    actions: {},
+});
+
+const getStateless = () => new StoredState({
+    session: new SessionState({
+        token: "",
+        username: "",
+    }),
+    connection: new ConnectionState(),
 });
 // export {useCounterStore, getTokenStore};
-export {getStore};
+export {getStore, getStateless};

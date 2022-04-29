@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent} from "vue";
-import {getStore} from "@/stores";
+import {getStore, getStateless} from "@/stores";
 import {SOCK_RESPONSE_ENDPOINT} from "@/ts/common/Communication";
 import type {Client} from "stompjs";
 
@@ -15,6 +15,7 @@ export default defineComponent({
     login(evt: Event) {
       console.log(`Stack size: ${this.$router.getRoutes().length}`);
       let socket: Client = getStore().connection.webSocket;
+      // let socket: Client = getStateless().connection.webSocket;
       if (!socket.connected) {
         socket.connect({}, frame => {
           socket.subscribe(SOCK_RESPONSE_ENDPOINT, (msg) => {

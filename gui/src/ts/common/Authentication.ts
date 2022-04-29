@@ -1,7 +1,7 @@
 import type {RouteLocationNormalized} from "vue-router";
 import type {CookieOptions} from "cookie-storage/lib/cookie-options";
 import {CookieStorage} from 'cookie-storage';
-import {getStore} from "@/stores";
+import {getStore, getStateless} from "@/stores";
 
 // import $ = require("jquery");
 
@@ -13,6 +13,7 @@ const cookieStorage = new CookieStorage(<CookieOptions>{
 
 function isAuthenticated(to: RouteLocationNormalized, from: RouteLocationNormalized): boolean {
     let token = getStore().session.token;
+    // let token = getStateless().session.token;
     console.log(`from:[${from.path}] to:[${to.path}]`);
     return token !== "";
 }
