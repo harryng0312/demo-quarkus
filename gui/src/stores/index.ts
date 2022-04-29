@@ -80,7 +80,11 @@ class ConnectionState {
 interface StoredState {
     get session(): SessionState;
 
+    set session(sess: SessionState);
+
     get connection(): ConnectionState;
+
+    set connection(conn: ConnectionState);
 }
 
 // class GetterState {
@@ -121,7 +125,7 @@ interface MethodState {
 
 const getStore = <StoreDefinition<string, StoredState, GetterState, MethodState>>defineStore({
     id: "main",
-    state: () => ({
+    state: (): StoredState => ({
         session: new SessionState({
             token: "{}",
             username: "anonymous"
