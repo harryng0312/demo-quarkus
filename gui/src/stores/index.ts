@@ -125,7 +125,7 @@ interface MethodState {
 
 const getStore = <StoreDefinition<string, StoredState, GetterState, MethodState>>defineStore({
     id: "main",
-    state: (): StoredState => ({
+    state: () => ({
         session: new SessionState({
             token: "{}",
             username: "anonymous"
