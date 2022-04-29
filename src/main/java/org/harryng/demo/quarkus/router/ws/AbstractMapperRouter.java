@@ -28,16 +28,16 @@ public abstract class AbstractMapperRouter extends AbstractRouter {
     protected <T> T initBeanConfiguration(String bizMethodKey) {
         var methodArr = bizMethodKey.split("\\.");
         var setBean = beanManager.getBeans(methodArr[0]);
-        var proxiedBean = beanManager.resolve(setBean);
-        var creationalContext = beanManager.createCreationalContext(proxiedBean);
-        var bean = beanManager.getReference(proxiedBean,
-                proxiedBean.getBeanClass(), creationalContext);
-        var method = Arrays.stream(proxiedBean.getBeanClass().getDeclaredMethods())
+        var proxiedBeanWrapper = beanManager.resolve(setBean);
+        var creationalContext = beanManager.createCreationalContext(proxiedBeanWrapper);
+        var proxiedBean = beanManager.getReference(proxiedBeanWrapper,
+                proxiedBeanWrapper.getBeanClass(), creationalContext);
+        var method = Arrays.stream(proxiedBeanWrapper.getBeanClass().getDeclaredMethods())
                 .filter(m -> m.getName().equals(methodArr[1]))
                 .findFirst().orElseThrow();
         paramsClassMap.put(bizMethodKey, method.getParameterTypes());
-        beanMap.putIfAbsent(methodArr[0], bean);
-        return (T) bean;
+        beanMap.putIfAbsent(methodArr[0], proxiedBean);
+        return (T) proxiedBean;
     }
 
     public <T> T getBean(String bizMethodName) {
