@@ -98,12 +98,12 @@ const getStore = <StoreDefinition<string, StoredState>>defineStore({
     actions: {},
 });
 
-const getStateless = () => new StoredState({
+const getStateless = () => { return new StoredState({
     session: new SessionState({
         token: "",
         username: "",
     }),
     connection: new ConnectionState(),
-});
+});};
 // export {useCounterStore, getTokenStore};
-export {getStore, getStateless};
+export {getStore};

@@ -1,7 +1,7 @@
 import type {RouteLocationNormalized} from "vue-router";
 import type {CookieOptions} from "cookie-storage/lib/cookie-options";
 import {CookieStorage} from 'cookie-storage';
-import {getStore, getStateless} from "@/stores";
+import {getStore} from "@/stores";
 
 // import $ = require("jquery");
 
