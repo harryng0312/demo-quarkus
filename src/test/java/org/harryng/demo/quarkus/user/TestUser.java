@@ -1,12 +1,11 @@
 package org.harryng.demo.quarkus.user;
 
-import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.main.QuarkusMainTest;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
-import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
@@ -28,6 +27,7 @@ import static io.restassured.RestAssured.given;
 public class TestUser {
 
     static Logger logger = LoggerFactory.getLogger(TestUser.class);
+
     @Inject
     protected UserService userService;
     @Inject
@@ -50,7 +50,7 @@ public class TestUser {
     }
 
     @Test
-    public void editUser() {
+    public void editUser() throws Exception {
         var user = new UserImpl();
         var now = LocalDateTime.now();
 //        {"id":2,"createdDate":"2022-04-11T15:21:21.082945",
@@ -67,12 +67,15 @@ public class TestUser {
         user.setPasswdEncryptedMethod("plain");
 
         var extras = new HashMap<String, Object>();
-        sessionFactory.withStatelessTransaction(Unchecked.function((sess, trans) -> {
-            extras.putIfAbsent(BaseService.TRANS_STATELESS_SESSION, sess);
-            extras.putIfAbsent(BaseService.TRANSACTION, trans);
-            return userService.edit(SessionHolder.createAnonymousSession(), user, extras);
-        })).invoke(rs -> {
-            logger.info("result after edit: " + rs);
-        }).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
+//        var runner = sessionFactory.withStatelessTransaction(Unchecked.function((sess) -> {
+//            extras.putIfAbsent(BaseService.TRANS_STATELESS_SESSION, sess);
+////            extras.putIfAbsent(BaseService.TRANSACTION, trans);
+//            return userService.edit(SessionHolder.createAnonymousSession(), user, extras);
+//        })).invoke(rs -> {
+//            logger.info("result after edit: " + rs);
+//        });
+//        runner.await().indefinitely();
+
+        userService.edit(SessionHolder.createAnonymousSession(), user, extras);
     }
 }

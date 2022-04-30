@@ -1,17 +1,19 @@
 package org.harryng.demo.quarkus.validation.annotation;
 
-import org.harryng.demo.quarkus.validation.validator.UserValidator;
+import org.harryng.demo.quarkus.validation.validator.ScreennameValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+import static java.lang.annotation.ElementType.*;
+
 @Documented
-@Constraint(validatedBy = UserValidator.class)
-@Target({ ElementType.TYPE })
+@Constraint(validatedBy = ScreennameValidator.class)
+@Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE_USE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UserConstraint {
-    String message() default "User validator doesn't match!";
+public @interface ScreennameConstraint {
+    String message() default "User screenname validator doesn't match!";
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};

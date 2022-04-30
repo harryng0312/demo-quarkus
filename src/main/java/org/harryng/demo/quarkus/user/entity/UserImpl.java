@@ -1,7 +1,5 @@
 package org.harryng.demo.quarkus.user.entity;
 
-import org.harryng.demo.quarkus.validation.annotation.UserConstraint;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -9,10 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="user_")
+@Table(name = "user_")
 public class UserImpl extends UserModel {
 
-    public UserImpl(){super();}
+    public UserImpl() {
+        super();
+    }
 
     public UserImpl(Long id, LocalDateTime createdDate, LocalDateTime modifiedDate, String status,
                     String username, String password, String screenName, LocalDate dob, String passwdEncryptedMethod) {

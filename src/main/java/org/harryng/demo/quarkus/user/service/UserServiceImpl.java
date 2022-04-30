@@ -3,10 +3,12 @@ package org.harryng.demo.quarkus.user.service;
 import io.smallrye.mutiny.Uni;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
+import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
+import org.harryng.demo.quarkus.validation.ValidationResult;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +63,10 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         var valRs= validator.validate(user);
-        valRs.stream().forEach(cv -> {
-            throw new RuntimeException(cv.getMessage());
-        });
+        var valiRs = new ValidationResult(valRs);
+        if(!valiRs.isSuccess()){
+            throw new Exception(valiRs.getMessagesInJson());
+        }
         return super.edit(sessionHolder, user, extras);
     }
 
