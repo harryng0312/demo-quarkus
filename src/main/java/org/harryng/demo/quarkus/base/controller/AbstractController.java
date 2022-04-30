@@ -29,8 +29,8 @@ public abstract class AbstractController {
     @Inject
     protected Mutiny.SessionFactory sessionFactory;
 
-    @Inject
-    protected Uni<Mutiny.Session> transSession;
+//    @Inject
+//    protected Uni<Mutiny.Session> transSession;
 
     public HttpServerRequest getServerRequest() {
         return serverRequest;

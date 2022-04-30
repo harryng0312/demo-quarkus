@@ -16,10 +16,10 @@ public class CommonConfig {
     @Inject
     public Mutiny.SessionFactory sessionFactory;
 
-    @Produces
-    @Default
-    public Uni<Mutiny.Session> getTransactionSession(){
-        return sessionFactory.openSession();
-    }
+//    @Produces
+//    @Default
+//    public Uni<Mutiny.Session> getTransactionSession(){
+//        return sessionFactory.openSession();
+//    }
 
 }
