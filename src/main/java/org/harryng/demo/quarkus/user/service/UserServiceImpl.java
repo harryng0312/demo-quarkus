@@ -1,7 +1,6 @@
 package org.harryng.demo.quarkus.user.service;
 
 import io.smallrye.mutiny.Uni;
-
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
@@ -15,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.validation.Validator;
 import java.util.Map;
 
 @Singleton
@@ -29,6 +29,9 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Inject
     protected UserReactivePersistence userReactivePersistence;
+
+    @Inject
+    protected Validator validator;
 
     @Override
     public UserPersistence getPersistence() {
@@ -52,67 +55,21 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Override
     public Uni<Integer> add(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        // var transSession = (Mutiny.Session) extras.get("transSession");
-        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
-        logger.info("service transSession:" + transSession.hashCode());
-        return Uni.combine().all().unis(
-            Uni.createFrom().item(() -> {
-                return 0;
-            }),
-            // transSession.flatMap(Unchecked.function(
-            //     session -> super.add(sessionHolder, user, extras)
-            //         .flatMap(Unchecked.function( itm -> {
-            //             session.flush();
-            //             return Uni.createFrom().item(itm);
-            //         }))
-            //         .eventually(session::close))),
-            // super.add(sessionHolder, user, extras),
-            transSession.insert(user),
-            Uni.createFrom().item(() -> {
-                // throw new RuntimeException("break trans from item");
-                return -1;
-            // }).call(item -> {
-            //     throw new RuntimeException("break trans from call");
-            }))
-            .combinedWith(lsRs ->(Integer)lsRs.get(1));
+        return super.add(sessionHolder, user, extras);
     }
 
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        // var transSession = (Mutiny.Session) extras.get(TRANS_SESSION);
-        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
-        logger.info("service transSession:" + transSession.hashCode());
-        return Uni.combine().all().unis(
-            Uni.createFrom().item(() -> {
-                return 0;
-            }),
-            super.edit(sessionHolder, user, extras),
-            // transSession.update(user),
-            Uni.createFrom().item(() -> {
-                // throw new RuntimeException("break trans from item");
-                return -1;
-            // }).call(item -> {
-                // throw new RuntimeException("break trans from call");
-            }))
-            .combinedWith(lsRs ->(Integer)lsRs.get(1));
+        var valRs= validator.validate(user);
+        valRs.stream().forEach(cv -> {
+            throw new RuntimeException(cv.getMessage());
+        });
+        return super.edit(sessionHolder, user, extras);
     }
 
     @Override
     public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
-        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
-        logger.info("service transSession:" + transSession.hashCode());
-        return Uni.combine().all().unis(
-            Uni.createFrom().item(() -> {
-                return 0;
-            }),
-            super.remove(sessionHolder, id, extras),
-            Uni.createFrom().item(() -> {
-                // throw new RuntimeException("break trans from item");
-                return -1;
-            // }).call(item -> {
-                // throw new RuntimeException("break trans from call");
-            }))
-            .combinedWith(lsRs ->(Integer)lsRs.get(1));
+        return super.remove(sessionHolder, id, extras);
     }
 
 

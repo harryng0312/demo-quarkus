@@ -1,5 +1,7 @@
 package org.harryng.demo.quarkus.user.entity;
 
+import org.harryng.demo.quarkus.validation.annotation.UserConstraint;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

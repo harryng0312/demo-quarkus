@@ -5,6 +5,7 @@ import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.util.Map;
 
@@ -12,12 +13,18 @@ import java.util.Map;
 public class MethodMapperRouter extends AbstractMapperRouter {
 
     @Override
+    @PostConstruct
+    protected void init() {
+        super.init();
+    }
+
+    @Override
     protected void initMethodName() {
         // user
         methodNameMap.put("getUserById", "userService.getById");
         methodNameMap.put("addUser", "userService.add");
         methodNameMap.put("editUser", "userService.edit");
-        methodNameMap.put("removeUser", "userSerivce.remove");
+        methodNameMap.put("removeUser", "userService.remove");
     }
 
     @Override

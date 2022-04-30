@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.annotation.Inherited;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,6 +35,7 @@ public abstract class AbstractMapperRouter extends AbstractRouter {
                 proxiedBeanWrapper.getBeanClass(), creationalContext);
         var method = Arrays.stream(proxiedBeanWrapper.getBeanClass().getDeclaredMethods())
                 .filter(m -> m.getName().equals(methodArr[1]))
+                .filter(m -> !m.isBridge())
                 .findFirst().orElseThrow();
         paramsClassMap.put(bizMethodKey, method.getParameterTypes());
         beanMap.putIfAbsent(methodArr[0], proxiedBean);
