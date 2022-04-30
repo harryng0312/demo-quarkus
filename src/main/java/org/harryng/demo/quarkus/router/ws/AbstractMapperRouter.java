@@ -32,10 +32,10 @@ public abstract class AbstractMapperRouter extends AbstractRouter {
         var creationalContext = beanManager.createCreationalContext(proxiedBeanWrapper);
         var proxiedBean = beanManager.getReference(proxiedBeanWrapper,
                 proxiedBeanWrapper.getBeanClass(), creationalContext);
-        var method = Arrays.stream(proxiedBeanWrapper.getBeanClass().getDeclaredMethods())
-                .filter(m -> m.getName().equals(methodArr[1]))
-                .findFirst().orElseThrow();
-        paramsClassMap.put(bizMethodKey, method.getParameterTypes());
+//        var method = Arrays.stream(proxiedBeanWrapper.getBeanClass().getDeclaredMethods())
+//                .filter(m -> m.getName().equals(methodArr[1]))
+//                .findFirst().orElseThrow();
+//        paramsClassMap.putIfAbsent(bizMethodKey, method.getParameterTypes());
         beanMap.putIfAbsent(methodArr[0], proxiedBean);
         return (T) proxiedBean;
     }
@@ -49,6 +49,8 @@ public abstract class AbstractMapperRouter extends AbstractRouter {
 
     protected abstract void initMethodMap();
 
+    protected abstract void initMethodParamClasses();
+
     protected void initBeans() {
         for (Map.Entry<String, String> entry : methodNameMap.entrySet()) {
             initBeanConfiguration(entry.getValue());
@@ -59,6 +61,7 @@ public abstract class AbstractMapperRouter extends AbstractRouter {
     protected void init() {
         initMethodName();
         initMethodMap();
+        initMethodParamClasses();
         initBeans();
     }
 
@@ -67,7 +70,7 @@ public abstract class AbstractMapperRouter extends AbstractRouter {
     }
 
     public Class<?>[] getParamClasses(String methodId) {
-        return paramsClassMap.get(methodNameMap.get(methodId));
+        return paramsClassMap.get(methodId);
     }
 
     public Uni<?> invokeMethod(String methodName, SessionHolder sessionHolder, Map<String, Object> extras, Object... params) {
