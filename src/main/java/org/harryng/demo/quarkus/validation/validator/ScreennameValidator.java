@@ -1,10 +1,7 @@
 package org.harryng.demo.quarkus.validation.validator;
 
-import org.harryng.demo.quarkus.user.entity.UserImpl;
-import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.validation.annotation.ScreennameConstraint;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

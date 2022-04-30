@@ -17,7 +17,10 @@ public class ValidationResult {
     public ValidationResult(Set<? extends ConstraintViolation<?>> violations) {
         this.success = false;
         this.messages = violations.stream()
-                .map(ConstraintViolation::getMessage).toArray(String[]::new);
+                .map(cv -> {
+                    return String.join("", "/", cv.getPropertyPath().toString()
+                            ,":", cv.getMessage());
+                }).toArray(String[]::new);
     }
 
     private String[] messages = null;
@@ -39,7 +42,10 @@ public class ValidationResult {
         var json = new JsonObject();
         json.put("messages", new JsonArray());
         var messagesJson = json.getJsonArray("messages");
-        Stream.of(this.messages).forEach(messagesJson::add);
+        Stream.of(this.messages).forEach(msg -> {
+
+            messagesJson.add(msg);
+        });
         return json.toString();
     }
 }
