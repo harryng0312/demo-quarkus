@@ -59,24 +59,6 @@ class ConnectionState {
     }
 }
 
-// class StoredState {
-//     private readonly _session: SessionState;
-//     private readonly _connection: ConnectionState;
-//
-//     constructor(ss: { session: SessionState, connection: ConnectionState }) {
-//         this._session = ss.session;
-//         this._connection = ss.connection;
-//     }
-//
-//     get session(): SessionState {
-//         return this._session;
-//     }
-//
-//     get connection(): ConnectionState {
-//         return this._connection;
-//     }
-// }
-
 interface StoredState {
     get session(): SessionState;
 
