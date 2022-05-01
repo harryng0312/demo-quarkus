@@ -1,17 +1,21 @@
 package org.harryng.demo.quarkus.router.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.vertx.web.Param;
 import io.quarkus.vertx.web.Route;
 import io.quarkus.vertx.web.RouteBase;
 import io.quarkus.vertx.web.RoutingExchange;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
 import org.harryng.demo.quarkus.base.service.BaseService;
+import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
+import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -26,7 +30,7 @@ public class UserRouter extends AbstractController {
     @Inject
     protected UserService userService;
 
-    @Route(path = ":id", methods = Route.HttpMethod.GET)
+    @Route(path = "/:id", methods = Route.HttpMethod.GET, order = 500)
     public void getUserById(RoutingExchange exc, @Param("id") String id) {
         logger.info("user id:" + id);
         // get user by id
@@ -51,17 +55,35 @@ public class UserRouter extends AbstractController {
                 ));
     }
 
-    @Route(path = "/", methods = Route.HttpMethod.POST)
+    @Route(path = "/*", methods = Route.HttpMethod.POST, order = 500)
     public void addUser(RoutingContext ctx) {
-
+        logger.info("into /http/user post");
+//        ctx.next();
     }
 
-    @Route(path = "/", methods = Route.HttpMethod.PUT)
+    @Route(path = "/*", methods = Route.HttpMethod.PUT, order = 500)
     public void editUser(RoutingContext ctx) {
-
+        logger.info("into /http/user put");
+        ctx.request().bodyHandler(buffer -> {
+            logger.info("put body: " + buffer.toString());
+            UserImpl user = null;
+            try {
+                user = getObjectMapper().readValue(buffer.toString(), UserImpl.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            UserImpl finalUser = user;
+            sessionFactory.withStatelessTransaction(Unchecked.function((sess, trans) -> {
+                return userService.edit(SessionHolder.createAnonymousSession(),
+                        finalUser,
+                        Map.of(BaseService.TRANS_STATELESS_SESSION, sess,
+                                BaseService.TRANSACTION, trans)
+                );
+            })).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
+        }).end().compose(v -> Future.succeededFuture());
     }
 
-    @Route(path = "/:id", methods = Route.HttpMethod.DELETE)
+    @Route(path = "/:id", methods = Route.HttpMethod.DELETE, order = 500)
     public void removeUser(RoutingContext ctx, @Param("id") String id) {
 
     }

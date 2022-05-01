@@ -1,6 +1,6 @@
 package org.harryng.demo.quarkus.validation.validator;
 
-import org.harryng.demo.quarkus.util.I18nMessage;
+import org.harryng.demo.quarkus.util.I18nMessageBundle;
 import org.harryng.demo.quarkus.validation.annotation.ScreennameConstraint;
 
 import javax.inject.Inject;
@@ -12,7 +12,7 @@ import javax.validation.ConstraintValidatorContext;
 public class ScreennameValidator implements ConstraintValidator<ScreennameConstraint, String> {
 
     @Inject
-    protected I18nMessage appMessage;
+    protected I18nMessageBundle appMessage;
 
     @Override
     public void initialize(ScreennameConstraint constraintAnnotation) {
@@ -24,9 +24,10 @@ public class ScreennameValidator implements ConstraintValidator<ScreennameConstr
 
         var valiRs = true;
         valiRs = value != null && !"".equals(value.trim());
-        context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(appMessage.getMessage("error.screenname"))
-                .addConstraintViolation();
+//        context.disableDefaultConstraintViolation();
+//        context.buildConstraintViolationWithTemplate(
+//                MessageBundles.get(I18nMessage.class, Localized.Literal.of("vi")).error_screenname())
+//                .addConstraintViolation();
         return valiRs;
     }
 }

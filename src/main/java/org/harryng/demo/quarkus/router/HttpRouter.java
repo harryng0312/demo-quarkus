@@ -14,16 +14,18 @@ import javax.ws.rs.core.MediaType;
 @RouteBase(path = "/http", produces = {MediaType.APPLICATION_JSON})
 public class HttpRouter {
     static Logger logger = LoggerFactory.getLogger(HttpRouter.class);
-    @Route(path = "/*")
+
+    @Route(path = "/*", order = 1000)
     public void handleDefault(RoutingContext context) {
         logger.info("into /http handler");
         context.next();
     }
 
-    @Route(path = "/*", type = Route.HandlerType.FAILURE)
-    public void handleError(RoutingContext context){
-        logger.error("Error[" + context.response().getStatusCode()+"]:" + context.response().getStatusMessage());
+    @Route(path = "/*", type = Route.HandlerType.FAILURE, order = 1500)
+    public void handleError(RoutingContext context) {
+        logger.error("Error[" + context.response().getStatusCode() + "]:" + context.response().getStatusMessage());
         context.response().end(String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
-                context.response().getStatusMessage(), "\"}")).compose(v-> Future.succeededFuture());
+                context.response().getStatusMessage(), "\"}")).compose(v -> Future.succeededFuture());
+        context.next();
     }
 }

@@ -5,7 +5,6 @@ import io.vertx.core.json.JsonObject;
 
 import javax.validation.ConstraintViolation;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ValidationResult {

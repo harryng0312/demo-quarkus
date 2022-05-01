@@ -8,6 +8,9 @@ import java.time.*;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 public class UserModel extends AbstractStatedEntity<Long> {
@@ -33,6 +36,7 @@ public class UserModel extends AbstractStatedEntity<Long> {
 
     @Basic
     @Column(name = "username")
+    @NotBlank
     public String getUsername() {
         return username;
     }
@@ -53,7 +57,7 @@ public class UserModel extends AbstractStatedEntity<Long> {
 
     @Basic
     @Column(name = "screenname")
-    @ScreennameConstraint
+//    @ScreennameConstraint
     public String getScreenName() {
         return screenName;
     }

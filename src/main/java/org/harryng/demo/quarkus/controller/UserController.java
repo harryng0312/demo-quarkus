@@ -117,8 +117,6 @@ public class UserController extends AbstractController {
     @POST
     @Path("/edit-user-nonblock")
     public Uni<Response> editUserNonBlock(String reqBodyStr) throws RuntimeException, Exception {
-        logger.info("controller sessFact: " + sessionFactory.hashCode());
-        var userImpl = getObjectMapper().readValue(reqBodyStr, UserImpl.class);
         // return sessionFactory.withTransaction(Unchecked.function((session, trans) -> {
         //     logger.info("controller transSession:" + session.hashCode());
         //     return userService.edit(
@@ -126,13 +124,16 @@ public class UserController extends AbstractController {
         //         Collections.singletonMap(BaseService.TRANS_SESSION, session));
         // })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()));
         return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) -> {
+                    logger.info("controller sessFact: " + sessionFactory.hashCode());
+                    var userImpl = getObjectMapper().readValue(reqBodyStr, UserImpl.class);
                     logger.info("controller transSession:" + session.hashCode());
                     return userService.edit(
                             SessionHolder.createAnonymousSession(), userImpl,
                             Map.of(BaseService.TRANS_STATELESS_SESSION, session,
                                     BaseService.TRANSACTION, trans));
                 })).flatMap(item -> Uni.createFrom().item(Response.ok(item).build()))
-                .onFailure().recoverWithItem(ex -> Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex).build());
+                .onFailure()
+                .recoverWithItem(ex -> Response.status(Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build());
     }
 
     @GET

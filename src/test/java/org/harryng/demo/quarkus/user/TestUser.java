@@ -1,6 +1,7 @@
 package org.harryng.demo.quarkus.user;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.vertx.core.json.JsonObject;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -44,6 +45,44 @@ public class TestUser {
                 .when().get("/user/get-username-sync?id=1")
                 .body().prettyPrint();
         logger.info("test Username:" + body);
+    }
+
+    @Test
+    public void editUser2() throws Exception {
+        var user = new UserImpl();
+        var now = LocalDateTime.now();
+//        {"id":2,"createdDate":"2022-04-11T15:21:21.082945",
+        user.setId(3L);
+        user.setCreatedDate(now);
+//        "modifiedDate":"2022-04-11T15:21:21.082945","status":"1","username":"username 2",
+        user.setModifiedDate(now);
+        user.setStatus("1");
+        user.setUsername("");
+//        "password":"passwd2","screenName":"","dob":"2022-04-11","passwdEncryptedMethod":"plain"}
+        user.setPassword("passwd2");
+        user.setScreenName("");
+        user.setDob(now.toLocalDate());
+        user.setPasswdEncryptedMethod("plain");
+
+        var req = "{\n" +
+                "    \"id\": 3,\n" +
+                "    \"createdDate\": \"2022-04-10T08:00:00\",\n" +
+                "    \"modifiedDate\": \"2022-04-10T08:00:00\",\n" +
+                "    \"status\": \"1\",\n" +
+                "    \"username\": \"\",\n" +
+                "    \"password\": \"passwd3\",\n" +
+                "    \"screenName\": \"\",\n" +
+                "    \"dob\": \"2022-04-10\",\n" +
+                "    \"passwdEncryptedMethod\": \"plain\"\n" +
+                "}";
+
+        var res = given()
+                .when()
+                .header("content-type", "application/json")
+                .header("Accept-Language", "vi")
+                .body(req)
+                .put("/http/user");
+        logger.info("res:" + res.body().prettyPrint());
     }
 
     @Test
