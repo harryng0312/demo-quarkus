@@ -1,9 +1,6 @@
 package org.harryng.demo.quarkus.user;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.main.QuarkusMainTest;
-import io.smallrye.mutiny.unchecked.Unchecked;
-import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
