@@ -1,7 +1,12 @@
 package org.harryng.demo.quarkus.validation.validator;
 
+import io.quarkus.qute.i18n.Localized;
+import io.quarkus.qute.i18n.MessageBundles;
+import io.vertx.core.MultiMap;
+import org.harryng.demo.quarkus.i18n.I18nMessage;
 import org.harryng.demo.quarkus.util.I18nMessageBundle;
 import org.harryng.demo.quarkus.validation.annotation.ScreennameConstraint;
+import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,10 +29,13 @@ public class ScreennameValidator implements ConstraintValidator<ScreennameConstr
 
         var valiRs = true;
         valiRs = value != null && !"".equals(value.trim());
-//        context.disableDefaultConstraintViolation();
-//        context.buildConstraintViolationWithTemplate(
-//                MessageBundles.get(I18nMessage.class, Localized.Literal.of("vi")).error_screenname())
-//                .addConstraintViolation();
+        var headers = context.unwrap(HibernateConstraintValidatorContext.class)
+                .getConstraintValidatorPayload(MultiMap.class);
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(
+                        MessageBundles.get(I18nMessage.class,
+                                Localized.Literal.of(headers.get("Accept-Language"))).error_screenname())
+                .addConstraintViolation();
         return valiRs;
     }
 }

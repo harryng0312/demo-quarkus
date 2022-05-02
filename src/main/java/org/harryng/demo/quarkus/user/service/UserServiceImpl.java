@@ -75,7 +75,7 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                     .usingContext()
                     .constraintValidatorPayload(extras.get(BaseService.HTTP_HEADERS))
                     .getValidator();
-            var valRs = validator.validate(user, EditUserContraint.class);
+            var valRs = validator.validate(user);
             return new ValidationResult(valRs);
         }).flatMap(Unchecked.function(valiRs -> {
             if (!valiRs.isSuccess()) {
