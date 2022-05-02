@@ -36,7 +36,7 @@ public class UserModel extends AbstractStatedEntity<Long> {
 
     @Basic
     @Column(name = "username")
-    @NotBlank
+    @NotBlank(message = "{msg:error_username_notblank}")
     public String getUsername() {
         return username;
     }

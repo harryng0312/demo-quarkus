@@ -76,7 +76,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                     .constraintValidatorPayload(extras.get(BaseService.HTTP_HEADERS))
                     .getValidator();
             var valRs = validator.validate(user);
-            return new ValidationResult(valRs);
+            var headers = (MultiMap)extras.get(BaseService.HTTP_HEADERS);
+            return new ValidationResult(valRs, headers.get("Accept-Language"));
         }).flatMap(Unchecked.function(valiRs -> {
             if (!valiRs.isSuccess()) {
                 throw new Exception(valiRs.getMessagesInJson());

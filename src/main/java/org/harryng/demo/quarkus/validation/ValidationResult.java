@@ -1,9 +1,12 @@
 package org.harryng.demo.quarkus.validation;
 
+import io.quarkus.qute.Qute;
+import io.quarkus.qute.i18n.MessageBundles;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import javax.validation.ConstraintViolation;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +19,7 @@ public class ValidationResult {
         this.messages = messages;
     }
 
-    public ValidationResult(Set<? extends ConstraintViolation<?>> violations) {
+    public ValidationResult(Set<? extends ConstraintViolation<?>> violations, String langTag) {
         this.success = false;
 //        this.messages = violations.stream()
 //                .map(cv -> {
@@ -26,7 +29,8 @@ public class ValidationResult {
 //                }).toArray(String[]::new);
         this.mapPathMsg = violations.stream().collect(Collectors.toMap(
                 cv -> String.join("", "/", cv.getPropertyPath().toString()),
-                ConstraintViolation::getMessage
+                cv -> Qute.fmt(cv.getMessage())
+                        .attribute(MessageBundles.ATTRIBUTE_LOCALE, Locale.forLanguageTag(langTag)).render()
         ));
     }
 

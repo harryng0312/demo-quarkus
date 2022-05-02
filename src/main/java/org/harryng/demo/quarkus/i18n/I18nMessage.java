@@ -8,4 +8,7 @@ public interface I18nMessage {
 
     @Message("Screen name is fault")
     String error_screenname();
+
+    @Message("Username is not blank")
+    String error_username_notblank();
 }

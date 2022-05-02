@@ -1,7 +1,8 @@
 package org.harryng.demo.quarkus.user;
 
+import io.quarkus.qute.Qute;
+import io.quarkus.qute.i18n.MessageBundles;
 import io.quarkus.test.junit.QuarkusTest;
-import io.vertx.core.json.JsonObject;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
 
@@ -45,6 +47,10 @@ public class TestUser {
                 .when().get("/user/get-username-sync?id=1")
                 .body().prettyPrint();
         logger.info("test Username:" + body);
+        logger.info("Qute:" + Qute.fmt("test {msg:error_screenname}")
+                .attribute(MessageBundles.ATTRIBUTE_LOCALE, Locale.forLanguageTag("vi"))
+                .render()
+        );
     }
 
     @Test
@@ -79,7 +85,7 @@ public class TestUser {
         var res = given()
                 .when()
                 .header("content-type", "application/json")
-                .header("Accept-Language", "vi")
+                .header("Accept-Language", "en")
                 .body(req)
                 .put("/http/user");
         logger.info("res:" + res.body().prettyPrint());
