@@ -22,13 +22,13 @@ public class HttpFilter {
 //    }
 
     @RouteFilter(100)
-    public void authFilter(RoutingContext ctx) {
+    public void authFilter(RoutingContext context) {
         logger.info("auth filter");
 //        currentVertxRequest.setCurrent(rc);
-//        var tokenCookie = rc.request().getCookie("token");
-//        if(tokenCookie != null){
-//            var token = tokenCookie.getName();
-//        }
-        ctx.next();
+        var tokenCookie = context.request().getCookie("token");
+        if(tokenCookie != null){
+            var token = tokenCookie.getName();
+        }
+        context.next();
     }
 }

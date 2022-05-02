@@ -2,12 +2,14 @@ package org.harryng.demo.quarkus.validation.validator;
 
 import io.quarkus.qute.i18n.Localized;
 import io.quarkus.qute.i18n.MessageBundles;
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerRequest;
 import org.harryng.demo.quarkus.i18n.I18nMessage;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.I18nMessageBundle;
 import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
+import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
@@ -20,9 +22,6 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
 
     @Inject
     protected I18nMessageBundle appMessage;
-
-    @Inject
-    protected HttpServerRequest request;
 
 //    @Inject
 //    protected UserService userService;
@@ -39,10 +38,12 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
     public boolean isValid(UserImpl value, ConstraintValidatorContext context) {
         var valiRs = true;
         valiRs = value != null && !"".equals(value.getScreenName());
+        var headers = context.unwrap(HibernateConstraintValidatorContext.class)
+                        .getConstraintValidatorPayload(MultiMap.class);
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(
                 MessageBundles.get(I18nMessage.class,
-                        Localized.Literal.of(request.getHeader("Accept-Language"))).error_screenname())
+                        Localized.Literal.of(headers.get("Accept-Language"))).error_screenname())
                 .addConstraintViolation();
         return valiRs;
     }

@@ -2,9 +2,11 @@ package org.harryng.demo.quarkus.user.service;
 
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.MultiMap;
 import io.vertx.mutiny.core.Vertx;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
+import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
@@ -12,6 +14,7 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.validation.ValidationResult;
 import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
 import org.hibernate.reactive.mutiny.Mutiny;
+import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.Map;
 
 @Singleton
@@ -34,6 +38,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Inject
     protected UserReactivePersistence userReactivePersistence;
 
+    @Inject
+    protected ValidatorFactory validatorFactory;
     @Inject
     protected Validator validator;
 
@@ -65,6 +71,10 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         return Uni.createFrom().item(() -> {
+            var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
+                    .usingContext()
+                    .constraintValidatorPayload(extras.get(BaseService.HTTP_HEADERS))
+                    .getValidator();
             var valRs = validator.validate(user, EditUserContraint.class);
             return new ValidationResult(valRs);
         }).flatMap(Unchecked.function(valiRs -> {
