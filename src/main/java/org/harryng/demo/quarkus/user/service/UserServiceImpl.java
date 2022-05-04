@@ -10,9 +10,9 @@ import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
+import org.harryng.demo.quarkus.validation.ValidationPayloads;
 import org.harryng.demo.quarkus.validation.ValidationResult;
 import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
-import org.harryng.demo.quarkus.validation.validator.EditUserValidator;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
@@ -66,9 +66,13 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         return vertx.executeBlocking(Uni.createFrom().item(() -> {
+            var payloadMap = ValidationPayloads.newInstance();
+            payloadMap.put(SessionHolder.class, sessionHolder);
+            payloadMap.put(Map.class, extras);
+            payloadMap.put(UserService.class, this);
             var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
                     .usingContext()
-                    .constraintValidatorPayload(extras.get(BaseService.HTTP_HEADERS))
+                    .constraintValidatorPayload(payloadMap)
                     .getValidator();
             var valRs = validator.validate(user, EditUserContraint.class);
             var headers = (MultiMap) extras.get(BaseService.HTTP_HEADERS);
@@ -88,17 +92,18 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
 
     @Override
-    public UserImpl getByUsername(SessionHolder sessionHolder, String username, Map<String, Object> extras) throws RuntimeException, Exception {
+    public Uni<UserImpl> getByUsername(SessionHolder sessionHolder, String username, Map<String, Object> extras) throws RuntimeException, Exception {
         var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
-        UserImpl result = null;
         // var pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id")); //PageRequest.of(0, 5, Sort.Direction.ASC, "id");
-        // var jpql = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
+        var jpql = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
         // var params = new HashMap<String, Serializable>();
         // params.put("username", username);
         // Page<UserImpl> pageResult = findByConditions(sessionHolder, jpql, params, pageInfo, 1, Collections.emptyMap());
         // if (pageResult.getTotal() > 0) {
         //     result = pageResult.getContent().get(0);
         // }
-        return result;
+
+        return transSession.<UserImpl>createQuery(jpql)
+                .setParameter("username", username).getSingleResultOrNull();
     }
 }

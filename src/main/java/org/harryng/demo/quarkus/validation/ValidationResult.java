@@ -30,7 +30,8 @@ public class ValidationResult {
         this.mapPathMsg = violations.stream().collect(Collectors.toMap(
                 cv -> String.join("", "/", cv.getPropertyPath().toString()),
                 cv -> Qute.fmt(cv.getMessage())
-                        .attribute(MessageBundles.ATTRIBUTE_LOCALE, Locale.forLanguageTag(langTag)).render()
+                        .attribute(MessageBundles.ATTRIBUTE_LOCALE, Locale.forLanguageTag(langTag)).render(),
+                (s0, s1) -> s0
         ));
     }
 
@@ -47,9 +48,10 @@ public class ValidationResult {
     }
 
 
-    public static ValidationResult getInstance(Set<? extends ConstraintViolation<?>> violations, String langTag){
+    public static ValidationResult getInstance(Set<? extends ConstraintViolation<?>> violations, String langTag) {
         return new ValidationResult(violations, langTag);
     }
+
     public boolean isSuccess() {
         success = this.mapPathMsg.isEmpty();
         return success;

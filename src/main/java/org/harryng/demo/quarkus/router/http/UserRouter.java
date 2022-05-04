@@ -3,16 +3,15 @@ package org.harryng.demo.quarkus.router.http;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.vertx.web.*;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
-import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -78,7 +77,11 @@ public class UserRouter extends AbstractController {
                             BaseService.HTTP_HEADERS, ctx.request().headers(),
                             BaseService.HTTP_COOKIES, ctx.request().cookies())
             );
-        })).subscribe().with(ReactiveUtil.defaultSuccessConsumer(),
+        })).subscribe().with(itm -> {
+                    var jsonRs = new JsonObject();
+                    jsonRs.put("result", itm);
+                    ctx.response().end(jsonRs.toString());
+                },
                 ex -> {
                     logger.error("", ex);
                     ctx.response().end(ex.getCause().getMessage());

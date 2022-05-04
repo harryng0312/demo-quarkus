@@ -8,8 +8,13 @@ public interface I18nMessageVi extends I18nMessage {
 
     @Override
     @Message("Tên hiển thị chưa đúng")
-    String error_screenname();
+    String errorScreenname();
 
+    @Override
     @Message("Tên tài khoản không được để trống")
-    String error_username_notblank();
+    String errorUsernameNotblank();
+
+    @Override
+    @Message("Tài khoản đã tồn tại")
+    String errorUserIsExisted();
 }

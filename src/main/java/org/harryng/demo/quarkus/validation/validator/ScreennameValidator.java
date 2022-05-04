@@ -34,7 +34,7 @@ public class ScreennameValidator implements ConstraintValidator<ScreennameConstr
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(
                         MessageBundles.get(I18nMessage.class,
-                                Localized.Literal.of(headers.get("Accept-Language"))).error_screenname())
+                                Localized.Literal.of(headers.get("Accept-Language"))).errorScreenname())
                 .addConstraintViolation();
         return valiRs;
     }

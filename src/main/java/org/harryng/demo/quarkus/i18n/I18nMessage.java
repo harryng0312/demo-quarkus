@@ -7,8 +7,11 @@ import io.quarkus.qute.i18n.MessageBundle;
 public interface I18nMessage {
 
     @Message("Screen name is fault")
-    String error_screenname();
+    String errorScreenname();
 
     @Message("Username is not blank")
-    String error_username_notblank();
+    String errorUsernameNotblank();
+
+    @Message("User is existed")
+    String errorUserIsExisted();
 }

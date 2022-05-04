@@ -9,5 +9,5 @@ public interface I18nMessageEn extends I18nMessage {
 
     @Override
     @Message("Screen name is fault in en")
-    String error_screenname();
+    String errorScreenname();
 }

@@ -2,20 +2,23 @@ package org.harryng.demo.quarkus.validation.validator;
 
 import io.quarkus.qute.i18n.Localized;
 import io.quarkus.qute.i18n.MessageBundles;
+import io.smallrye.mutiny.Uni;
 import io.vertx.core.MultiMap;
-import io.vertx.core.http.HttpServerRequest;
+import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.i18n.I18nMessage;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.I18nMessageBundle;
+import org.harryng.demo.quarkus.util.SessionHolder;
+import org.harryng.demo.quarkus.validation.ValidationPayloads;
 import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.Map;
 
 @ApplicationScoped
 public class EditUserValidator implements ConstraintValidator<EditUserContraint, UserImpl> {
@@ -34,14 +37,35 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
     @Override
     public boolean isValid(UserImpl value, ConstraintValidatorContext context) {
         var valiRs = true;
-        valiRs = value != null && !"".equals(value.getScreenName());
-        var headers = context.unwrap(HibernateConstraintValidatorContext.class)
-                        .getConstraintValidatorPayload(MultiMap.class);
         context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(
-                MessageBundles.get(I18nMessage.class,
-                        Localized.Literal.of(headers.get("Accept-Language"))).error_screenname())
-                .addConstraintViolation();
+        valiRs = value.getUsername() != null && !"".equals(value.getScreenName());
+        var validatorContextMap = context.unwrap(HibernateConstraintValidatorContext.class)
+                .getConstraintValidatorPayload(ValidationPayloads.class);
+
+        var sessionHolder = validatorContextMap.get(SessionHolder.class);
+        var extras = (Map<String, Object>) validatorContextMap.get(Map.class);
+        var userService = validatorContextMap.get(UserService.class);
+        var headers = (MultiMap) extras.get(BaseService.HTTP_HEADERS);
+        if ("".equals(value.getScreenName())) {
+            context.buildConstraintViolationWithTemplate(
+                            MessageBundles.get(I18nMessage.class,
+                                    Localized.Literal.of(headers.get("Accept-Language"))).errorScreenname())
+                    .addConstraintViolation();
+        }
+        UserImpl user = null;
+        try {
+            user = userService.getByUsername(sessionHolder, value.getUsername(), extras)
+                    .await().indefinitely();
+            valiRs = valiRs && (user == null);
+            if (user != null) {
+                context.buildConstraintViolationWithTemplate(
+                                MessageBundles.get(I18nMessage.class,
+                                        Localized.Literal.of(headers.get("Accept-Language"))).errorUserIsExisted())
+                        .addConstraintViolation();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         try {
             Thread.sleep(5_000);
         } catch (InterruptedException e) {
