@@ -64,8 +64,6 @@ dependencies {
 
 //    implementation 'io.quarkus:quarkus-spring-data-jpa'
 
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
 }
