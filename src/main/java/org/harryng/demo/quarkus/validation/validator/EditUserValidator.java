@@ -8,11 +8,14 @@ import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.i18n.I18nMessage;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
+import org.harryng.demo.quarkus.user.service.UserServiceImpl;
 import org.harryng.demo.quarkus.util.I18nMessageBundle;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.validation.ValidationPayloads;
 import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -22,7 +25,7 @@ import java.util.Map;
 
 @ApplicationScoped
 public class EditUserValidator implements ConstraintValidator<EditUserContraint, UserImpl> {
-
+    static Logger logger = LoggerFactory.getLogger(EditUserValidator.class);
     @Inject
     protected I18nMessageBundle appMessage;
 
@@ -37,6 +40,7 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
     @Override
     public boolean isValid(UserImpl value, ConstraintValidatorContext context) {
         var valiRs = true;
+        logger.info("validate user");
         context.disableDefaultConstraintViolation();
         valiRs = value.getUsername() != null && !"".equals(value.getScreenName());
         var validatorContextMap = context.unwrap(HibernateConstraintValidatorContext.class)

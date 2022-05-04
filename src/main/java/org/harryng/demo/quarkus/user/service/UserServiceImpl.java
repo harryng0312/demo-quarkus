@@ -65,7 +65,9 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
+        logger.info("edit user");
         return vertx.executeBlocking(Uni.createFrom().item(() -> {
+            logger.info("validate user in blocking");
             var payloadMap = ValidationPayloads.newInstance();
             payloadMap.put(SessionHolder.class, sessionHolder);
             payloadMap.put(Map.class, extras);
@@ -94,6 +96,7 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     public Uni<UserImpl> getByUsername(SessionHolder sessionHolder, String username, Map<String, Object> extras) throws RuntimeException, Exception {
         var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
+        logger.info("get by username");
         // var pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id")); //PageRequest.of(0, 5, Sort.Direction.ASC, "id");
         var jpql = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
         // var params = new HashMap<String, Serializable>();
