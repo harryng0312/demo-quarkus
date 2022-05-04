@@ -19,7 +19,7 @@ public class ValidationResult {
         this.messages = messages;
     }
 
-    public ValidationResult(Set<? extends ConstraintViolation<?>> violations, String langTag) {
+    private ValidationResult(Set<? extends ConstraintViolation<?>> violations, String langTag) {
         this.success = false;
 //        this.messages = violations.stream()
 //                .map(cv -> {
@@ -46,6 +46,10 @@ public class ValidationResult {
         return messages;
     }
 
+
+    public static ValidationResult getInstance(Set<? extends ConstraintViolation<?>> violations, String langTag){
+        return new ValidationResult(violations, langTag);
+    }
     public boolean isSuccess() {
         success = this.mapPathMsg.isEmpty();
         return success;

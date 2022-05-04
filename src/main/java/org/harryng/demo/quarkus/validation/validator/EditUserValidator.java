@@ -24,9 +24,6 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
     protected I18nMessageBundle appMessage;
 
 //    @Inject
-//    protected UserService userService;
-
-//    @Inject
 //    protected I18nMessage i18nMessage;
 
     @Override
@@ -45,6 +42,11 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
                 MessageBundles.get(I18nMessage.class,
                         Localized.Literal.of(headers.get("Accept-Language"))).error_screenname())
                 .addConstraintViolation();
+        try {
+            Thread.sleep(5_000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return valiRs;
     }
 }
