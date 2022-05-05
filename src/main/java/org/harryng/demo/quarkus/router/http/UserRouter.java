@@ -1,6 +1,5 @@
 package org.harryng.demo.quarkus.router.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.vertx.web.*;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
@@ -26,10 +25,7 @@ public class UserRouter extends AbstractController {
     @Inject
     protected UserService userService;
 
-    @Route(path = "/:id", methods = Route.HttpMethod.GET, order = 500)
-    public void getUserById(RoutingExchange exc, @Param("id") String id) {
-        logger.info("user id:" + id);
-        // get user by id
+    protected void getUserById(RoutingExchange exc, String id) {
         sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) ->
                         userService.getById(SessionHolder.createAnonymousSession(),
                                 Long.parseLong(id),
@@ -51,33 +47,15 @@ public class UserRouter extends AbstractController {
                 ));
     }
 
-    @Route(path = "/*", methods = Route.HttpMethod.POST, order = 200)
-    public void addUser(RoutingContext ctx) {
-        logger.info("into /http/user post");
-//        ctx.next();
-    }
-
-    @Route(path = "/*", methods = Route.HttpMethod.PUT, order = 200)
-    public void editUser(RoutingContext ctx, @Body Buffer buffer) {
-        logger.info("into /http/user put");
-//        ctx.request().bodyHandler(buffer -> {
-        logger.info("put body: " + buffer.toString());
-        UserImpl user = null;
-        try {
-            user = getObjectMapper().readValue(buffer.toString(), UserImpl.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        UserImpl finalUser = user;
-        sessionFactory.withStatelessTransaction(Unchecked.function((sess, trans) -> {
-            return userService.edit(SessionHolder.createAnonymousSession(),
-                    finalUser,
-                    Map.of(BaseService.TRANS_STATELESS_SESSION, sess,
-                            BaseService.TRANSACTION, trans,
-                            BaseService.HTTP_HEADERS, ctx.request().headers(),
-                            BaseService.HTTP_COOKIES, ctx.request().cookies())
-            );
-        })).subscribe().with(itm -> {
+    protected void editUser(RoutingContext ctx, Buffer buffer) {
+        sessionFactory.withStatelessTransaction(Unchecked.function(
+                (sess, trans) -> userService.edit(SessionHolder.createAnonymousSession(),
+                        getObjectMapper().readValue(buffer.toString(), UserImpl.class),
+                        Map.of(BaseService.TRANS_STATELESS_SESSION, sess,
+                                BaseService.TRANSACTION, trans,
+                                BaseService.HTTP_HEADERS, ctx.request().headers(),
+                                BaseService.HTTP_COOKIES, ctx.request().cookies())
+                ))).subscribe().with(itm -> {
                     var jsonRs = new JsonObject();
                     jsonRs.put("result", itm);
                     ctx.response().end(jsonRs.toString());
@@ -86,7 +64,36 @@ public class UserRouter extends AbstractController {
                     logger.error("", ex);
                     ctx.response().end(ex.getCause().getMessage());
                 });
-//        }).end().compose(v -> Future.succeededFuture());
+    }
+
+    @Route(path = "/:id", methods = Route.HttpMethod.GET, order = 500)
+    public void getUserByIdNonBlocking(RoutingExchange exc, @Param("id") String id) {
+        logger.info("into /http/user/:id get");
+        getUserById(exc, id);
+    }
+
+    @Route(path = "/:id/blocking", methods = Route.HttpMethod.GET, type = Route.HandlerType.BLOCKING, order = 200)
+    public void getUserByIdBlocking(RoutingExchange exc, @Param("id") String id) {
+        logger.info("into /http/user/:id/blocking get");
+        getUserById(exc, id);
+    }
+
+    @Route(path = "/*", methods = Route.HttpMethod.POST, order = 500)
+    public void addUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) {
+        logger.info("into /http/user post");
+        ctx.next();
+    }
+
+    @Route(path = "/*", methods = Route.HttpMethod.PUT, order = 500)
+    public void editUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) {
+        logger.info("into /http/user put");
+        editUser(ctx, buffer);
+    }
+
+    @Route(path = "/blocking/*", methods = Route.HttpMethod.PUT, type = Route.HandlerType.BLOCKING, order = 200)
+    public void editUserBlocking(RoutingContext ctx, @Body Buffer buffer) {
+        logger.info("into /http/user/nonblocking put");
+        editUser(ctx, buffer);
     }
 
     @Route(path = "/:id", methods = Route.HttpMethod.DELETE, order = 500)

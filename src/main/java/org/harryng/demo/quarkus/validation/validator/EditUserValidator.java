@@ -70,11 +70,6 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        try {
-            Thread.sleep(5_000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return valiRs;
     }
 }

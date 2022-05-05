@@ -16,17 +16,10 @@ import java.util.stream.Stream;
 public class ValidationResult {
     public ValidationResult(String[] messages) {
         this.success = true;
-        this.messages = messages;
     }
 
     private ValidationResult(Set<? extends ConstraintViolation<?>> violations, String langTag) {
         this.success = false;
-//        this.messages = violations.stream()
-//                .map(cv -> {
-//                    return String.join("", "{\"path\":",
-//                            "\"/", cv.getPropertyPath().toString(),"\",",
-//                            "\"message\":\"", cv.getMessage(), "\"");
-//                }).toArray(String[]::new);
         this.mapPathMsg = violations.stream().collect(Collectors.toMap(
                 cv -> String.join("", "/", cv.getPropertyPath().toString()),
                 cv -> Qute.fmt(cv.getMessage())
@@ -35,18 +28,9 @@ public class ValidationResult {
         ));
     }
 
-    private String[] messages = null;
     private boolean success = false;
 
     private Map<String, String> mapPathMsg = null;
-
-    public String[] getMessages() {
-        if (messages == null) {
-            messages = new String[0];
-        }
-        return messages;
-    }
-
 
     public static ValidationResult getInstance(Set<? extends ConstraintViolation<?>> violations, String langTag) {
         return new ValidationResult(violations, langTag);
