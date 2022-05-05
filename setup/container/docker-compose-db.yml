@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  db:
+    image: ${postgresDb}
+    container_name: db
+    read_only: true
+    hostname: pgdb
+    domainname: pgdb
+
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - POSTGRES_DB=${db_name}
+      - POSTGRES_USER=${uname}
+      - POSTGRES_PASSWORD=${passwd}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ${tmp_dir}:/tmp
+      - ${data_dir}:/var/lib/postgresql/data
+      - ${pg_run_dir}:/var/run/postgresql
+    ports:
+      - 5432:5432
+    networks:
+      external-net:
+        aliases:
+          - app
+networks:
+  external-net:
+    name: external-net

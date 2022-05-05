@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  proxy:
+    image: nginx:latest
+    hostname: proxy
+    read_only: true
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /docker/tmp:/tmp
+      - /docker/nginx/cache:/var/cache/nginx
+      - /docker/nginx/run:/var/run
+      - /docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /docker/nginx/log/nginx:/var/log/nginx
+      - /docker/nginx/cert:/etc/nginx/cert
+    networks:
+      dmz-net:
+      external-net:
+  app:
+    image: openjdk:11.0.7-jdk
+    read_only: true
+    hostname: app
+    environment:
+      DEMO_HOME: /opt/demo-communication
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - /docker/tmp:/tmp
+      - /docker/demo-communication/opt:/opt/demo-communication
+    depends_on:
+      - proxy
+    networks:
+      internal-net:
+      dmz-net:
+    labels:
+      # for enterprise ver: domain+port for a services cluster
+      com.docker.lb.hosts: demo_comm_app
+      com.docker.lb.port: 9090
+    command: java -jar /opt/demo-communication/demo-communication-web-1.0-SNAPSHOT.war
+networks:
+  internal-net:
+    internal: true
+    name: internal-net
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.239.0/24"
+  dmz-net:
+    internal: true
+    name: dmz-net
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
+  external-net:
+    name: external-net

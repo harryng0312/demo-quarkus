@@ -1,2 +1,12 @@
-build production:
-build -x check -x javadoc -Dquarkus.package.type=uber-jar -Dquarkus.profile=prod
+1. build production:
+$ ./gradlew build -x check -x javadoc -Dquarkus.package.type=uber-jar -Dquarkus.profile=prod
+
+2. build container for docker:
+2.1. config:
+quarkus.buildpack.jvm-builder-image=<jvm builder image>
+quarkus.buildpack.native-builder-image=<native builder image>
+quarkus.container-image.builder=docker
+2.2. cmd:
+$./gradlew addExtension --extensions="container-image-docker"
+$./gradlew addExtension --extensions="container-image-buildpack"
+$./gradlew build -Dquarkus.container-image.build=true
