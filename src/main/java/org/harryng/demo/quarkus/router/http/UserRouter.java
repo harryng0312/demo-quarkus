@@ -1,6 +1,7 @@
 package org.harryng.demo.quarkus.router.http;
 
 import io.quarkus.vertx.web.*;
+import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
@@ -11,6 +12,7 @@ import org.harryng.demo.quarkus.base.controller.AbstractController;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
+import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -25,8 +27,8 @@ public class UserRouter extends AbstractController {
     @Inject
     protected UserService userService;
 
-    protected void getUserById(RoutingExchange exc, String id) {
-        sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) ->
+    protected Uni<?> getUserById(RoutingExchange exc, String id) {
+        return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) ->
                         userService.getById(SessionHolder.createAnonymousSession(),
                                 Long.parseLong(id),
                                 Map.of(BaseService.TRANS_STATELESS_SESSION, session,
@@ -38,10 +40,10 @@ public class UserRouter extends AbstractController {
                 .invoke(Unchecked.consumer(user -> {
                     if (user == null) throw new RuntimeException("user is not found");
                 }))
-                .subscribe().with(Unchecked.consumer(user -> exc.response().setChunked(true)
+                .map(Unchecked.function(user -> exc.response().setChunked(true)
                         .write(Buffer.buffer(getObjectMapper().writeValueAsString(user)))
-                        .eventually(v -> exc.response().end())
-                ), ex -> exc.response().setStatusCode(404).end(
+                        .eventually(v -> exc.response().end())))
+                .onFailure().invoke(ex -> exc.response().setStatusCode(404).end(
                         String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
                                 ex.getMessage(), "\"}")
                 ));
@@ -69,13 +71,14 @@ public class UserRouter extends AbstractController {
     @Route(path = "/:id", methods = Route.HttpMethod.GET, order = 500)
     public void getUserByIdNonBlocking(RoutingExchange exc, @Param("id") String id) {
         logger.info("into /http/user/:id get");
-        getUserById(exc, id);
+        getUserById(exc, id).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
     }
 
     @Route(path = "/:id/blocking", methods = Route.HttpMethod.GET, type = Route.HandlerType.BLOCKING, order = 200)
     public void getUserByIdBlocking(RoutingExchange exc, @Param("id") String id) {
         logger.info("into /http/user/:id/blocking get");
-        getUserById(exc, id);
+        getUserById(exc, id).await().indefinitely();
+        exc.context().next();
     }
 
     @Route(path = "/*", methods = Route.HttpMethod.POST, order = 500)
