@@ -1,6 +1,7 @@
 package org.harryng.demo.quarkus.router.http;
 
 import io.quarkus.vertx.web.*;
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
@@ -74,11 +75,11 @@ public class UserRouter extends AbstractController {
         getUserById(exc, id).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
     }
 
-    @Route(path = "/:id/blocking", methods = Route.HttpMethod.GET, type = Route.HandlerType.BLOCKING, order = 200)
+    @Route(path = "/:id/blocking", methods = Route.HttpMethod.GET, order = 200)
+    @Blocking
     public void getUserByIdBlocking(RoutingExchange exc, @Param("id") String id) {
         logger.info("into /http/user/:id/blocking get");
         getUserById(exc, id).await().indefinitely();
-        exc.context().next();
     }
 
     @Route(path = "/*", methods = Route.HttpMethod.POST, order = 500)

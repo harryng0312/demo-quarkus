@@ -2,6 +2,7 @@ package org.harryng.demo.quarkus.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
@@ -54,10 +55,15 @@ public class UserController extends AbstractController {
 
     @GET
     @Path("/get-user-by-id-block")
+    @Blocking
     public UserImpl getUserByIdBlock(@QueryParam("id") long id) {
         UserImpl rs = null;
         try {
-            var opt = userService.getById(SessionHolder.createAnonymousSession(), id, Collections.emptyMap());
+            var opt = sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) ->
+                    userService.getById(SessionHolder.createAnonymousSession(), id,
+                            Map.of(BaseService.TRANS_STATELESS_SESSION, session,
+                                    BaseService.TRANSACTION, trans
+                            ))));
             rs = opt.onItem().ifNull().continueWith(UserImpl::new).await().indefinitely();
         } catch (Exception e) {
             logger.error("", e);
