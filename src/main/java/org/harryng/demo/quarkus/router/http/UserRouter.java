@@ -14,6 +14,7 @@ import org.harryng.demo.quarkus.base.controller.AbstractController;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
+import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -83,7 +84,7 @@ public class UserRouter extends AbstractController {
     @Blocking
     public UserImpl getUserByIdBlocking(RoutingExchange exc, HttpServerResponse response, @Param("id") String id) {
         logger.info("into /http/user/:id/blocking get");
-//        getVertx().executeBlocking(getUserById(exc, id)).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
+//        return getUserById(exc, response, id).await().indefinitely();
         return getVertx().executeBlockingAndAwait(getUserById(exc, response, id));
     }
 
