@@ -6,6 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.mutiny.core.http.HttpServerResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.MediaType;
@@ -22,10 +23,13 @@ public class HttpRouter {
     }
 
     @Route(path = "/*", type = Route.HandlerType.FAILURE, order = 1500)
-    public void handleError(RoutingContext context) {
+    public void handleError(RoutingContext context, HttpServerResponse response) {
         logger.error("Error[" + context.response().getStatusCode() + "]:" + context.response().getStatusMessage());
-//        context.response().end(String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
-//                context.response().getStatusMessage(), "\"}")).compose(v -> Future.succeededFuture());
+        if(!response.ended()) {
+            response.end(String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
+                            context.response().getStatusMessage(), "\"}"))
+                    .subscribe().with(v -> Future.succeededFuture());
+        }
         context.next();
     }
 }

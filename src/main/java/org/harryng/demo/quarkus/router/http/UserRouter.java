@@ -9,6 +9,7 @@ import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.mutiny.core.http.HttpServerResponse;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
@@ -19,7 +20,12 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 @RouteBase(path = "/http/user", produces = {MediaType.APPLICATION_JSON})
@@ -28,7 +34,7 @@ public class UserRouter extends AbstractController {
     @Inject
     protected UserService userService;
 
-    protected Uni<?> getUserById(RoutingExchange exc, String id) {
+    protected Uni<UserImpl> getUserById(RoutingExchange exc, HttpServerResponse response, String id) {
         return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) ->
                         userService.getById(SessionHolder.createAnonymousSession(),
                                 Long.parseLong(id),
@@ -41,10 +47,13 @@ public class UserRouter extends AbstractController {
                 .invoke(Unchecked.consumer(user -> {
                     if (user == null) throw new RuntimeException("user is not found");
                 }))
-                .map(Unchecked.function(user -> exc.response().setChunked(true)
-                        .write(Buffer.buffer(getObjectMapper().writeValueAsString(user)))
-                        .eventually(v -> exc.response().end())))
-                .onFailure().invoke(ex -> exc.response().setStatusCode(404).end(
+//                .map(Unchecked.function(user -> {
+//                    response.setChunked(true)
+//                            .write(getObjectMapper().writeValueAsString(user))
+//                            .eventually(() -> response.end());
+//                    return response;
+//                }))
+                .onFailure().invoke(ex -> response.setStatusCode(404).end(
                         String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
                                 ex.getMessage(), "\"}")
                 ));
@@ -70,16 +79,18 @@ public class UserRouter extends AbstractController {
     }
 
     @Route(path = "/:id", methods = Route.HttpMethod.GET, order = 500)
-    public void getUserByIdNonBlocking(RoutingExchange exc, @Param("id") String id) {
+    public Uni<UserImpl> getUserByIdNonBlocking(RoutingExchange exc, HttpServerResponse response, @Param("id") String id) {
         logger.info("into /http/user/:id get");
-        getUserById(exc, id).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
+//        getUserById(exc, response, id).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
+        return getUserById(exc, response, id);
     }
 
-    @Route(path = "/:id/blocking", methods = Route.HttpMethod.GET, order = 200)
+    @Route(path = "/:id/blocking", methods = Route.HttpMethod.GET, type = Route.HandlerType.BLOCKING, order = 200)
     @Blocking
-    public void getUserByIdBlocking(RoutingExchange exc, @Param("id") String id) {
+    public UserImpl getUserByIdBlocking(RoutingExchange exc, HttpServerResponse response, @Param("id") String id) {
         logger.info("into /http/user/:id/blocking get");
-        getUserById(exc, id).await().indefinitely();
+//        getVertx().executeBlocking(getUserById(exc, id)).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
+        return getVertx().executeBlockingAndAwait(getUserById(exc, response, id));
     }
 
     @Route(path = "/*", methods = Route.HttpMethod.POST, order = 500)

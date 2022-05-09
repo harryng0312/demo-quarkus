@@ -22,7 +22,7 @@ public class HttpFilter {
 //    }
 
     @RouteFilter(100)
-    public void authFilter(RoutingContext context) {
+    public void authFilter(RoutingContext context){
         logger.info("auth filter");
 //        currentVertxRequest.setCurrent(rc);
         var tokenCookie = context.request().getCookie("token");

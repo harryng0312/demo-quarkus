@@ -64,7 +64,8 @@ public class UserController extends AbstractController {
                             Map.of(BaseService.TRANS_STATELESS_SESSION, session,
                                     BaseService.TRANSACTION, trans
                             ))));
-            rs = opt.onItem().ifNull().continueWith(UserImpl::new).await().indefinitely();
+            rs = getVertx().executeBlockingAndAwait(opt.onItem().ifNull().continueWith(UserImpl::new));
+//            rs = new UserImpl();
         } catch (Exception e) {
             logger.error("", e);
         }
