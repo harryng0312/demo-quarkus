@@ -3,19 +3,20 @@ services:
   app:
     image: harryng/demo-quarkus
     read_only: true
-    hostname: app
+    hostname: demo-quarkus
     container_name: demo-quarkus
+    # command: "ls -l ."
     deploy:
       resources:
         limits:
           cpus: 1
           memory: 1g
     ports:
-      - "8080:8080"
+      - "9090:8080"
     expose:
       - '8080'
     environment:
-      TZ: Asia/Ho_Chi_Minh
+      - TZ=Asia/Ho_Chi_Minh
     volumes:
       - ./tmp:/tmp
       - ./log:/log

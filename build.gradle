@@ -41,8 +41,8 @@ dependencies {
 
 //    implementation "io.quarkus:quarkus-scheduler"
 //    implementation "io.quarkus:quarkus-quartz"
-    implementation "io.quarkus:quarkus-security"
-    implementation 'io.quarkus:quarkus-websockets'
+//    implementation "io.quarkus:quarkus-security"
+//    implementation 'io.quarkus:quarkus-websockets'
 
 
 //    implementation "io.quarkus:quarkus-hibernate-orm"
@@ -59,8 +59,8 @@ dependencies {
 
     implementation "org.jboss.logmanager:log4j2-jboss-logmanager";
 
-    implementation "org.bouncycastle:bcprov-jdk15on"
-    implementation "org.bouncycastle:bctls-jdk15on"
+//    implementation "org.bouncycastle:bcprov-jdk15on"
+//    implementation "org.bouncycastle:bctls-jdk15on"
 //    implementation "org.bouncycastle:bc-fips"
 //    implementation "org.bouncycastle:bctls-fips"
 
