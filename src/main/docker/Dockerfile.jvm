@@ -75,8 +75,8 @@
 #   accessed directly. (example: "foo.example.com,bar.example.com")
 #
 ###
-#FROM registry.access.redhat.com/ubi8/openjdk-11:1.11
-FROM registry.access.redhat.com/ubi8/openjdk-17:latest
+#FROM registry.access.redhat.com/ubi8/openjdk-11:1.12
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.12
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' TZ='Asia/Ho_Chi_Minh'
 
@@ -92,9 +92,9 @@ ENV AB_JOLOKIA_OFF=""
 ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -Xms512m -Xmx512m"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 # customize
-#ENV GC_CONTAINER_OPTIONS="-XX:+UseG1GC"
+ENV GC_CONTAINER_OPTIONS="-XX:+UseG1GC"
 #ENV GC_CONTAINER_OPTIONS="-XX:+UseSerialGC"
 #ENV GC_CONTAINER_OPTIONS="-XX:+UseParallelGC"
 #ENV GC_CONTAINER_OPTIONS="-XX:+UseConcMarkSweepGC"
 #ENV GC_CONTAINER_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
-ENV GC_CONTAINER_OPTIONS="-XX:+UseZGC"
+#ENV GC_CONTAINER_OPTIONS="-XX:+UseZGC"

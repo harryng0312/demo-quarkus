@@ -20,5 +20,5 @@ $./gradlew build -x test -x check -x javadoc --info -Dquarkus.package.type=nativ
 $./gradlew build -x test -x check -x javadoc --info -Dquarkus.package.type=native -Dquarkus.container-image.build=true \
 -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=registry.access.redhat.com/quarkus/mandrel-21-rhel8:21.3-19
 
--Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-native-image:22.0.0-java17
--Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-native-image:21.3.2-java11
+-Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-native-image:22.1.0-java17
+-Dquarkus.native.builder-image=quay.io/quarkus/ubi-quarkus-native-image:22.1.0-java11
