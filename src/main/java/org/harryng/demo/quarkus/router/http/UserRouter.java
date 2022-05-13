@@ -30,10 +30,26 @@ public class UserRouter extends AbstractController {
     protected UserService userService;
 
     protected Uni<UserImpl> getUserById(RoutingExchange exc, HttpServerResponse response, String id) {
-        return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) ->
+//        return sessionFactory.withStatelessTransaction(Unchecked.function((session, trans) ->
+//                        userService.getById(SessionHolder.createAnonymousSession(),
+//                                Long.parseLong(id),
+//                                Map.of(BaseService.TRANS_STATELESS_SESSION, session,
+//                                        BaseService.TRANSACTION, trans
+//                                )
+//                        ))
+//                )
+//                // write response
+//                .invoke(Unchecked.consumer(user -> {
+//                    if (user == null) throw new RuntimeException("user is not found");
+//                }))
+//                .onFailure().invoke(ex -> response.setStatusCode(404).end(
+//                        String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
+//                                ex.getMessage(), "\"}")
+//                ));
+        return sessionFactory.withTransaction(Unchecked.function((session, trans) ->
                         userService.getById(SessionHolder.createAnonymousSession(),
                                 Long.parseLong(id),
-                                Map.of(BaseService.TRANS_STATELESS_SESSION, session,
+                                Map.of(BaseService.TRANS_SESSION, session,
                                         BaseService.TRANSACTION, trans
                                 )
                         ))
@@ -42,12 +58,6 @@ public class UserRouter extends AbstractController {
                 .invoke(Unchecked.consumer(user -> {
                     if (user == null) throw new RuntimeException("user is not found");
                 }))
-//                .map(Unchecked.function(user -> {
-//                    response.setChunked(true)
-//                            .write(getObjectMapper().writeValueAsString(user))
-//                            .eventually(() -> response.end());
-//                    return response;
-//                }))
                 .onFailure().invoke(ex -> response.setStatusCode(404).end(
                         String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
                                 ex.getMessage(), "\"}")
