@@ -48,6 +48,7 @@ dependencies {
 //    implementation "io.quarkus:quarkus-jdbc-postgresql"
 //    implementation "io.quarkus:quarkus-jdbc-h2"
     implementation "io.quarkus:quarkus-hibernate-reactive"
+    implementation "io.quarkus:quarkus-hibernate-reactive-panache"
     implementation "io.quarkus:quarkus-reactive-pg-client"
 
 //    implementation "org.apache.camel.quarkus:camel-quarkus-core"
@@ -71,7 +72,7 @@ group 'org.harryng.demo.quarkus'
 version '1.0-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_17
 }
 
