@@ -1,26 +1,31 @@
 package org.harryng.demo.quarkus.user.entity;
 
 import org.harryng.demo.quarkus.base.entity.AbstractStatedEntity;
+import org.harryng.demo.quarkus.validation.annotation.ScreennameConstraint;
 
 import java.time.*;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 public class UserModel extends AbstractStatedEntity<Long> {
-
     private String username = "";
     private String password = "";
     private String screenName = "";
     private LocalDate dob = LocalDate.of(1_800, Month.JANUARY, 1);
     private String passwdEncryptedMethod = "plain";
 
-    public UserModel(){super();}
+    public UserModel() {
+        super();
+    }
 
     public UserModel(Long id, LocalDateTime createdDate, LocalDateTime modifiedDate, String status,
-                     String username, String password, String screenName, LocalDate dob, String passwdEncryptedMethod){
+                     String username, String password, String screenName, LocalDate dob, String passwdEncryptedMethod) {
         super(id, createdDate, modifiedDate, status);
         this.username = username;
         this.password = password;
@@ -31,6 +36,7 @@ public class UserModel extends AbstractStatedEntity<Long> {
 
     @Basic
     @Column(name = "username")
+    @NotBlank(message = "{msg:error_username_notblank}")
     public String getUsername() {
         return username;
     }
@@ -51,6 +57,7 @@ public class UserModel extends AbstractStatedEntity<Long> {
 
     @Basic
     @Column(name = "screenname")
+    @ScreennameConstraint
     public String getScreenName() {
         return screenName;
     }

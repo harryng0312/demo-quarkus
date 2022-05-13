@@ -1,0 +1,83 @@
+version: "3.8"
+services:
+  proxy:
+#    build: ./nginx
+    image: ${nginxImg}
+    container_name: proxy
+    hostname: proxy
+    domainname: proxy
+    read_only: true
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - ${TMP_DIR}:/tmp
+      - ${PROXY_DIR}/cache:/var/cache/nginx
+      - ${PROXY_DIR}/run:/var/run
+      - ${PROXY_DIR}/nginx.conf:/etc/nginx/nginx.conf
+      - ${PROXY_DIR}/log/nginx:/var/log/nginx
+      - ${PROXY_DIR}/cert:/etc/nginx/cert
+    networks:
+      dmz-net:
+        aliases:
+          - proxy
+        ipv4_address: "172.16.238.2"
+        ipv6_address: "2001:3984:3989::2"
+      external-net:
+        aliases:
+          - proxy
+  app:
+    # build: ./app
+    image: ${openjdkImg}
+    container_name: app
+    read_only: true
+    hostname: app
+    domainname: app
+    environment:
+      DEMO_HOME: ${DEMO_HOME}
+      TZ: Asia/Ho_Chi_Minh
+#    ports:
+#      - 9090:9090
+    volumes:
+      - ${TMP_DIR}:/tmp
+      - ${APP_DIR}/opt:/opt/demo-communication
+    depends_on:
+      - proxy
+    networks:
+      internal-net:
+        aliases:
+          - app
+        ipv4_address: "172.16.239.10"
+#        ipv6_address: "2001:3984:3990::10"
+      dmz-net:
+        aliases:
+          - app
+        ipv4_address: "172.16.238.10"
+#        ipv6_address: "2001:3984:3989::10"
+    command: java -jar ${DEMO_HOME}/demo-communication-web-1.0-SNAPSHOT.war
+networks:
+  internal-net:
+    driver: bridge
+    internal: true
+    name: internal-net
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.239.0/24"
+        - subnet: "2001:3984:3990::/64"
+  dmz-net:
+    driver: bridge
+    internal: true
+#    enable_ipv6: true
+    name: dmz-net
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
+#        gateway: "172.16.238.1"
+        - subnet: "2001:3984:3989::/64"
+#        gateway: "2001:3984:3989::1"
+  external-net:
+    name: external-net

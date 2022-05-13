@@ -1,13 +1,21 @@
 package org.harryng.demo.quarkus.user.service;
 
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
+import io.vertx.core.MultiMap;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
+import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPanachePersistence;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
+import org.harryng.demo.quarkus.validation.ValidationPayloads;
+import org.harryng.demo.quarkus.validation.ValidationResult;
+import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
+import org.hibernate.reactive.mutiny.Mutiny;
+import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +39,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Inject
     protected UserReactivePersistence userReactivePersistence;
+//    @Inject
+//    protected Validator validator;
 
     @Inject
     protected UserPanachePersistence userPanachePersistence;
@@ -58,69 +68,36 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Override
     public Uni<Integer> add(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        // var transSession = (Mtiny.Session) extras.get("transSession");
-//        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
-//        logger.info("service transSession:" + transSession.hashCode());
-//        return Uni.combine().all().unis(
-//            Uni.createFrom().item(() -> {
-//                return 0;
-//            }),
-//            transSession.insert(user),
-//            Uni.createFrom().item(() -> {
-//                // throw new RuntimeException("break trans from item");
-//                return -1;
-//            // }).call(item -> {
-//            //     throw new RuntimeException("break trans from call");
-//            }))
-//            .combinedWith(lsRs ->(Integer)lsRs.get(1));
-        return Uni.createFrom().item(userPanachePersistence.persist(user) != null ? 1 : 0);
+        return super.add(sessionHolder, user, extras);
     }
 
     @Override
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        // var transSession = (Mutiny.Session) extras.get(TRANS_SESSION);
-//        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
-//        logger.info("service transSession:" + transSession.hashCode());
-//        return Uni.combine().all().unis(
-//                        Uni.createFrom().item(() -> {
-//                            return 0;
-//                        }),
-//                        super.edit(sessionHolder, user, extras),
-//                        // transSession.update(user),
-//                        Uni.createFrom().item(() -> {
-//                            // throw new RuntimeException("break trans from item");
-//                            return -1;
-//                            // }).call(item -> {
-//                            // throw new RuntimeException("break trans from call");
-//                        }))
-//                .combinedWith(lsRs -> (Integer) lsRs.get(1));
-        var uniRs = new AtomicReference<>(Uni.createFrom().item(0));
-        if (!userPanachePersistence.isPersistent(user)) {
-            var userUni = userPanachePersistence.persist(user);
-            userUni.subscribe().with(userImpl -> {
-                uniRs.set(Uni.createFrom().item(1));
-            });
-        }
-        return uniRs.get();
+        logger.info("edit user");
+        return vertx.executeBlocking(Uni.createFrom().item(() -> {
+            logger.info("validate user in blocking");
+            var payloadMap = ValidationPayloads.newInstance();
+            payloadMap.put(SessionHolder.class, sessionHolder);
+            payloadMap.put(Map.class, extras);
+            payloadMap.put(UserService.class, this);
+            var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
+                    .usingContext()
+                    .constraintValidatorPayload(payloadMap)
+                    .getValidator();
+            var valRs = validator.validate(user, EditUserContraint.class);
+            var headers = (MultiMap) extras.get(BaseService.HTTP_HEADERS);
+            return ValidationResult.getInstance(valRs, headers.get("Accept-Language"));
+        })).flatMap(Unchecked.function(valiRs -> {
+            if (!valiRs.isSuccess()) {
+                throw new Exception(valiRs.getMessagesInJson());
+            }
+            return super.edit(sessionHolder, user, extras);
+        }));
     }
 
     @Override
     public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
-//        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
-//        logger.info("service transSession:" + transSession.hashCode());
-//        return Uni.combine().all().unis(
-//                        Uni.createFrom().item(() -> {
-//                            return 0;
-//                        }),
-//                        super.remove(sessionHolder, id, extras),
-//                        Uni.createFrom().item(() -> {
-//                            // throw new RuntimeException("break trans from item");
-//                            return -1;
-//                            // }).call(item -> {
-//                            // throw new RuntimeException("break trans from call");
-//                        }))
-//                .combinedWith(lsRs -> (Integer) lsRs.get(1));
-        return userPanachePersistence.deleteById(id).flatMap(result -> Uni.createFrom().item(result ? 1 : 0));
+        return super.remove(sessionHolder, id, extras);
     }
 
 

@@ -1,8 +1,11 @@
 <script lang="ts">
-import {getTokenStore} from "@/stores/counter";
+import {defineComponent} from "vue";
+import {getStore} from "@/stores";
+import {SOCK_RESPONSE_ENDPOINT} from "@/ts/common/Communication";
+import type {Client} from "stompjs";
 
-export default {
-  data(){
+export default defineComponent({
+  data() {
     return {
       username: "",
       password: ""
@@ -11,14 +14,31 @@ export default {
   methods: {
     login(evt: Event) {
       console.log(`Stack size: ${this.$router.getRoutes().length}`);
-      if(this.username !== ""){
-        let token = getTokenStore().token;
-        getTokenStore().token = this.username;
-        this.$router.push("/");
+      let socket: Client = getStore().connection.webSocket;
+      // let socket: Client = getStateless().connection.webSocket;
+      if (!socket.connected) {
+        socket.connect({}, frame => {
+          socket.subscribe(SOCK_RESPONSE_ENDPOINT, (msg) => {
+            console.log(`Response:${JSON.parse(msg.body)}`);
+          });
+          console.log(`Connected:${frame}`);
+          socket.disconnect(() => {
+            console.log(`Socket disconnected`);
+          });
+        }, error => {
+          socket.disconnect(() => {
+            console.log(`Socket disconnected`);
+          });
+          console.log(`Error:${error}`);
+        });
+      }
+      if (this.username !== "") {
+        // let socket = createWebsocket();
+        // this.$router.push("/");
       }
     },
   },
-}
+});
 </script>
 
 <template>

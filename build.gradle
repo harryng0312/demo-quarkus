@@ -9,6 +9,8 @@ repositories {
 }
 
 dependencies {
+//    implementation 'io.quarkus:quarkus-container-image-buildpack'
+    implementation 'io.quarkus:quarkus-container-image-docker'
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusCamelArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-arc'
@@ -39,14 +41,15 @@ dependencies {
 
 //    implementation "io.quarkus:quarkus-scheduler"
 //    implementation "io.quarkus:quarkus-quartz"
-    implementation "io.quarkus:quarkus-security"
-    implementation 'io.quarkus:quarkus-websockets'
+//    implementation "io.quarkus:quarkus-security"
+//    implementation 'io.quarkus:quarkus-websockets'
 
 
 //    implementation "io.quarkus:quarkus-hibernate-orm"
 //    implementation "io.quarkus:quarkus-narayana-jta"
 //    implementation "io.quarkus:quarkus-jdbc-postgresql"
 //    implementation "io.quarkus:quarkus-jdbc-h2"
+    implementation "io.quarkus:quarkus-hibernate-validator"
     implementation "io.quarkus:quarkus-hibernate-reactive"
     implementation "io.quarkus:quarkus-hibernate-reactive-panache"
     implementation "io.quarkus:quarkus-reactive-pg-client"
@@ -57,8 +60,8 @@ dependencies {
 
     implementation "org.jboss.logmanager:log4j2-jboss-logmanager";
 
-    implementation "org.bouncycastle:bcprov-jdk15on"
-    implementation "org.bouncycastle:bctls-jdk15on"
+//    implementation "org.bouncycastle:bcprov-jdk15on"
+//    implementation "org.bouncycastle:bctls-jdk15on"
 //    implementation "org.bouncycastle:bc-fips"
 //    implementation "org.bouncycastle:bctls-fips"
 

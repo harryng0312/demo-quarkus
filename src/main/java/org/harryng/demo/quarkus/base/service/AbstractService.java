@@ -2,6 +2,7 @@ package org.harryng.demo.quarkus.base.service;
 
 import io.smallrye.mutiny.Uni;
 
+import io.vertx.mutiny.core.Vertx;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.harryng.demo.quarkus.base.entity.AbstractEntity;
 import org.harryng.demo.quarkus.base.persistence.BasePersistence;
@@ -10,6 +11,7 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import javax.inject.Inject;
+import javax.validation.ValidatorFactory;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -18,6 +20,12 @@ public abstract class AbstractService<Id extends Serializable, T extends Abstrac
 
     @Inject
     protected ManagedExecutor managedExecutor;
+
+    @Inject
+    protected ValidatorFactory validatorFactory;
+
+    @Inject
+    protected Vertx vertx;
 
     // @Inject
     // protected Mutiny.SessionFactory sessionFactory;

@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  app:
+    image: harryng/demo-quarkus
+    read_only: true
+    hostname: demo-quarkus
+    container_name: demo-quarkus
+    # command: "ls -l ."
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 1g
+    ports:
+      - "9090:8080"
+    expose:
+      - '8080'
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - ./tmp:/tmp
+      - ./log:/log
+    networks:
+      external-net:
+    labels:
+      com.docker.lb.hosts: demo-quarkus
+networks:
+  external-net:
+    internal: false
+    name: external-net
+    driver: bridge
