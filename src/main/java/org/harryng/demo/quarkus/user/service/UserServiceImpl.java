@@ -7,6 +7,7 @@ import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersisten
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
+import org.harryng.demo.quarkus.user.persistence.UserPanachePersistence;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -42,8 +43,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 //    @Inject
 //    protected Validator validator;
 
-//    @Inject
-//    protected UserPanachePersistence userPanachePersistence;
+    @Inject
+    protected UserPanachePersistence userPanachePersistence;
 
     @Override
     public UserPersistence getPersistence() {
@@ -59,11 +60,11 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     public Uni<UserImpl> getById(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
 //        var user = getPersistence().selectById(id);
         // var transSession = (Uni<Mutiny.Session>) extras.get(TRANS_SESSION);
-        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
+//        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
 //         return transSession.flatMap(Unchecked.function(
         //     session -> getReactivePersistence().selectById(session, id)));
-        return transSession.get(getReactivePersistence().getEntityClass(), id);
-//        return userPanachePersistence.findById(id);
+//        return transSession.get(getReactivePersistence().getEntityClass(), id);
+        return userPanachePersistence.findById(id);
     }
 
     @Override
