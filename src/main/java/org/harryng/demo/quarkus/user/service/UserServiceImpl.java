@@ -122,7 +122,6 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
         // if (pageResult.getTotal() > 0) {
         //     result = pageResult.getContent().get(0);
         // }
-
         return userPanachePersistence.find(jpql, params).firstResult();
     }
 }
