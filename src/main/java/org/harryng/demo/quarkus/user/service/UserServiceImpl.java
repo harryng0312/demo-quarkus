@@ -10,7 +10,6 @@ import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.persistence.UserPanachePersistence;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
-import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.validation.ValidationPayloads;
 import org.harryng.demo.quarkus.validation.ValidationResult;
@@ -34,11 +33,11 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    @Inject
-    protected UserPersistence userPersistence;
-
-    @Inject
-    protected UserReactivePersistence userReactivePersistence;
+//    @Inject
+//    protected UserPersistence userPersistence;
+//
+//    @Inject
+//    protected UserReactivePersistence userReactivePersistence;
 //    @Inject
 //    protected Validator validator;
 
@@ -47,12 +46,14 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Override
     public UserPersistence getPersistence() {
-        return this.userPersistence;
+//        return this.userPersistence;
+        return null;
     }
 
     @Override
     public BaseSearchableReactivePersistence<Long, UserImpl> getReactivePersistence() {
-        return this.userReactivePersistence;
+//        return this.userReactivePersistence;
+        return null;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     @ReactiveTransactional
     public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
-        return super.remove(sessionHolder, id, extras);
+        return userPanachePersistence.deleteById(id).flatMap(result -> Uni.createFrom().item(result ? 1 : 0));
     }
 
 
