@@ -1,5 +1,6 @@
 package org.harryng.demo.quarkus.user.service;
 
+import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.MultiMap;
@@ -28,6 +29,7 @@ import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Singleton
 @Named("userService")
@@ -68,11 +70,13 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     }
 
     @Override
+    @ReactiveTransactional
     public Uni<Integer> add(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        return super.add(sessionHolder, user, extras);
+        return userPanachePersistence.persist(user).flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
     }
 
     @Override
+    @ReactiveTransactional
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         logger.info("edit user");
         return vertx.executeBlocking(Uni.createFrom().item(() -> {
@@ -92,22 +96,21 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
             if (!valiRs.isSuccess()) {
                 throw new Exception(valiRs.getMessagesInJson());
             }
-            return Uni.createFrom().item(1);
-//            AtomicInteger result = new AtomicInteger();
-//            if (userPanachePersistence.isPersistent(user)) {
-//                userPanachePersistence.persist(user).subscribe().with(user1 -> {
-//                    result.set(user1 == null ? 0 : 1);
-//                });
-//            }
-//            return Uni.createFrom().item(result.get());
+//            return Uni.createFrom().item(1);
+            AtomicInteger result = new AtomicInteger();
+            if (userPanachePersistence.isPersistent(user)) {
+                userPanachePersistence.persist(user).subscribe().with(user1 -> result.set(user1 == null ? 0 : 1));
+            }
+            return Uni.createFrom().item(result.get());
         }));
     }
 
     @Override
+    @ReactiveTransactional
     public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
-//        return userPanachePersistence.deleteById(id).flatMap(result -> Uni.createFrom().item(result ? 1 : 0));
-        var session = (Mutiny.StatelessSession) extras.get(BaseService.TRANS_STATELESS_SESSION);
-        return userReactivePersistence.delete(session, id);
+        return userPanachePersistence.deleteById(id).flatMap(result -> Uni.createFrom().item(result ? 1 : 0));
+//        var session = (Mutiny.StatelessSession) extras.get(BaseService.TRANS_STATELESS_SESSION);
+//        return userReactivePersistence.delete(session, id);
     }
 
 
@@ -119,14 +122,14 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
         var jpql = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
         var params = new HashMap<String, Object>();
         params.put("username", username);
-        Uni<Page<UserImpl>> pageResult = findByConditions(sessionHolder, jpql, params, pageInfo, 1, Collections.emptyMap());
-        return pageResult.flatMap(userPage -> {
-            if (userPage.getTotal() > 0) {
-                return Uni.createFrom().item(userPage.getContent().stream().findFirst().get());
-            } else {
-                return Uni.createFrom().nullItem();
-            }
-        });
-//        return userPanachePersistence.find(jpql, params).firstResult();
+//        Uni<Page<UserImpl>> pageResult = findByConditions(sessionHolder, jpql, params, pageInfo, 1, Collections.emptyMap());
+//        return pageResult.flatMap(userPage -> {
+//            if (userPage.getTotal() > 0) {
+//                return Uni.createFrom().item(userPage.getContent().stream().findFirst().get());
+//            } else {
+//                return Uni.createFrom().nullItem();
+//            }
+//        });
+        return userPanachePersistence.find(jpql, params).firstResult();
     }
 }
