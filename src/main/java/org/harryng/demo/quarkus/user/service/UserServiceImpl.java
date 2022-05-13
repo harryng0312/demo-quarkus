@@ -1,6 +1,5 @@
 package org.harryng.demo.quarkus.user.service;
 
-import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.MultiMap;
@@ -68,13 +67,11 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     }
 
     @Override
-    @ReactiveTransactional
     public Uni<Integer> add(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         return super.add(sessionHolder, user, extras);
     }
 
     @Override
-    @ReactiveTransactional
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         logger.info("edit user");
         return vertx.executeBlocking(Uni.createFrom().item(() -> {
@@ -106,7 +103,6 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     }
 
     @Override
-    @ReactiveTransactional
     public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
 //        return userPanachePersistence.deleteById(id).flatMap(result -> Uni.createFrom().item(result ? 1 : 0));
         var session = (Mutiny.StatelessSession) extras.get(BaseService.TRANS_STATELESS_SESSION);
@@ -116,7 +112,7 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Override
     public Uni<UserImpl> getByUsername(SessionHolder sessionHolder, String username, Map<String, Object> extras) throws RuntimeException, Exception {
-        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
+//        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         UserImpl result = null;
         var pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id")); //PageRequest.of(0, 5, Sort.Direction.ASC, "id");
         var jpql = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
