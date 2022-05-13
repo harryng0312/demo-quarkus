@@ -14,7 +14,6 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.validation.ValidationPayloads;
 import org.harryng.demo.quarkus.validation.ValidationResult;
 import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
-import org.hibernate.reactive.mutiny.Mutiny;
 import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ import javax.inject.Singleton;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Singleton
 @Named("userService")
@@ -91,7 +90,13 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
             if (!valiRs.isSuccess()) {
                 throw new Exception(valiRs.getMessagesInJson());
             }
-            return super.edit(sessionHolder, user, extras);
+            AtomicInteger result = new AtomicInteger();
+            if (userPanachePersistence.isPersistent(user)) {
+                userPanachePersistence.persist(user).subscribe().with(user1 -> {
+                    result.set(user1 == null ? 0 : 1);
+                });
+            }
+            return Uni.createFrom().item(result.get());
         }));
     }
 
