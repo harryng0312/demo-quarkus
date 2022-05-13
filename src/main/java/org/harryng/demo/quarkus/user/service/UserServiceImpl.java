@@ -1,5 +1,6 @@
 package org.harryng.demo.quarkus.user.service;
 
+import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.MultiMap;
@@ -66,11 +67,13 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     }
 
     @Override
+    @ReactiveTransactional
     public Uni<Integer> add(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         return super.add(sessionHolder, user, extras);
     }
 
     @Override
+    @ReactiveTransactional
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         logger.info("edit user");
         return vertx.executeBlocking(Uni.createFrom().item(() -> {
@@ -101,6 +104,7 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     }
 
     @Override
+    @ReactiveTransactional
     public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
         return super.remove(sessionHolder, id, extras);
     }
