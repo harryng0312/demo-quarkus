@@ -17,7 +17,7 @@ public class UserModel extends AbstractStatedEntity<Long> {
     private String username = "";
     private String password = "";
     private String screenName = "";
-    private LocalDate dob = LocalDate.of(1_800, Month.JANUARY, 1);
+    private LocalDate dob = LocalDate.MIN;
     private String passwdEncryptedMethod = "plain";
 
     public UserModel() {

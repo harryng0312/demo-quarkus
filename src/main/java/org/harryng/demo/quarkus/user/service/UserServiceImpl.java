@@ -94,11 +94,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                 throw new Exception(valiRs.getMessagesInJson());
             }
 //            return Uni.createFrom().item(1);
-            AtomicInteger result = new AtomicInteger();
-            if (userPanachePersistence.isPersistent(user)) {
-                userPanachePersistence.persist(user).subscribe().with(user1 -> result.set(user1 == null ? 0 : 1));
-            }
-            return Uni.createFrom().item(result.get());
+            return userPanachePersistence.getSession().flatMap(session -> session.merge(user))
+                    .flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
         }));
     }
 
