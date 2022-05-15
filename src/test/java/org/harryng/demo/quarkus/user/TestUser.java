@@ -5,7 +5,6 @@ import io.quarkus.qute.i18n.MessageBundles;
 import io.quarkus.test.junit.QuarkusTest;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
-import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
@@ -130,6 +129,6 @@ public class TestUser {
 //        var user = userService.getByUsername(SessionHolder.createAnonymousSession(), "username 3",
 //                        Collections.emptyMap())
 //                .await().indefinitely();
-//        logger.info("user:" + user.getId());
+//        logger.info("user:" + user);
     }
 }
