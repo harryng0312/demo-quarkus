@@ -8,6 +8,7 @@ import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersisten
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
+import org.harryng.demo.quarkus.user.mapper.UserMapper;
 import org.harryng.demo.quarkus.user.persistence.UserPanachePersistence;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,6 +47,9 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 
     @Inject
     protected UserPanachePersistence userPanachePersistence;
+
+    @Inject
+    protected UserMapper userMapper;
 
     @Override
     public UserPersistence getPersistence() {
@@ -94,8 +100,24 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                 throw new Exception(valiRs.getMessagesInJson());
             }
 //            return Uni.createFrom().item(1);
-            return userPanachePersistence.getSession().flatMap(session -> session.merge(user))
-                    .flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
+//            return userPanachePersistence.getSession().flatMap(session -> session.merge(user))
+//                    .flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
+            return userPanachePersistence.findById(user.getId(), LockModeType.PESSIMISTIC_READ)
+                    .invoke(Unchecked.consumer(oldUser -> {
+                        if (oldUser == null) {
+                            throw new NoResultException();
+                        }
+                        userMapper.populateEntity(user, oldUser);
+                    }))
+                    .call(oldUser -> userPanachePersistence.persist(oldUser))
+                    .onFailure().recoverWithItem(Unchecked.function(ex -> {
+                        if (ex instanceof NoResultException) {
+                            return new UserImpl();
+                        } else {
+                            throw new Exception(ex);
+                        }
+                    }))
+                    .flatMap(newUser -> Uni.createFrom().item(newUser.getId() == 0L ? 0 : 1));
         }));
     }
 

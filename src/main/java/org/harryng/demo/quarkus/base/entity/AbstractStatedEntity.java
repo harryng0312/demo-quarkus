@@ -8,7 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AbstractStatedEntity<Id extends Serializable> extends AbstractEntity<Id> implements BaseStatedEntity{
+public abstract class AbstractStatedEntity<Id extends Serializable> extends AbstractEntity<Id> implements BaseStatedEntity<Id>{
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private String status;
