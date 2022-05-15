@@ -7,7 +7,6 @@ public class User {
     private String password = "";
     private String screenName = "";
     private LocalDate dob = LocalDate.MIN;
-    private String passwdEncryptedMethod = "plain";
 
     public String getUsername() {
         return username;
@@ -39,13 +38,5 @@ public class User {
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
-    }
-
-    public String getPasswdEncryptedMethod() {
-        return passwdEncryptedMethod;
-    }
-
-    public void setPasswdEncryptedMethod(String passwdEncryptedMethod) {
-        this.passwdEncryptedMethod = passwdEncryptedMethod;
     }
 }

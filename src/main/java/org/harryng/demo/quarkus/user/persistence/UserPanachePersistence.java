@@ -7,4 +7,5 @@ import javax.inject.Singleton;
 
 @Singleton
 public class UserPanachePersistence implements AbstractPanachePersistence<Long, UserImpl> {
+
 }

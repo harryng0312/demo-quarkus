@@ -5,6 +5,7 @@ import io.quarkus.qute.i18n.MessageBundles;
 import io.quarkus.test.junit.QuarkusTest;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
+import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.Page;
 import org.harryng.demo.quarkus.util.page.PageInfo;
@@ -16,10 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
@@ -104,7 +102,7 @@ public class TestUser {
         user.setUsername("");
 //        "password":"passwd2","screenName":"","dob":"2022-04-11","passwdEncryptedMethod":"plain"}
         user.setPassword("passwd2");
-        user.setScreenName("");
+        user.setScreenName("screenname3");
         user.setDob(now.toLocalDate());
         user.setPasswdEncryptedMethod("plain");
 
@@ -118,6 +116,20 @@ public class TestUser {
 //        });
 //        runner.await().indefinitely();
 
-        userService.edit(SessionHolder.createAnonymousSession(), user, extras);
+        userService.edit(SessionHolder.createAnonymousSession(), user, extras).await().indefinitely();
+    }
+
+    @Test
+    public void findUserByUsername() throws Exception {
+        var res = given()
+                .when()
+                .header("content-type", "application/json")
+                .header("Accept-Language", "en")
+                .get("/http/user/username/username 3");
+        logger.info("res:" + res.body().prettyPrint());
+//        var user = userService.getByUsername(SessionHolder.createAnonymousSession(), "username 3",
+//                        Collections.emptyMap())
+//                .await().indefinitely();
+//        logger.info("user:" + user.getId());
     }
 }

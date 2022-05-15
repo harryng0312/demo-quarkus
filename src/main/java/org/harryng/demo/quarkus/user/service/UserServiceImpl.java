@@ -124,6 +124,6 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 //                return Uni.createFrom().nullItem();
 //            }
 //        });
-        return userPanachePersistence.find(jpql, params).firstResult();
+        return userPanachePersistence.find(jpql, params).singleResult();
     }
 }

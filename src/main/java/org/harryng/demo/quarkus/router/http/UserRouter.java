@@ -17,6 +17,7 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Collections;
 
 @ApplicationScoped
@@ -129,5 +130,11 @@ public class UserRouter extends AbstractController {
     public void removeUser(RoutingContext ctx, @Param("id") String id) throws Exception {
         logger.info("into /http/user delete");
         userService.remove(SessionHolder.createAnonymousSession(), Long.parseLong(id), Collections.emptyMap());
+    }
+
+    @Route(path = "/username/:username", methods = Route.HttpMethod.GET, order = 200)
+    public Uni<UserImpl> getByUsername(RoutingContext ctx, @Param("username") String username) throws Exception {
+        logger.info("into /http/user/username get");
+        return userService.getByUsername(SessionHolder.createAnonymousSession(), username, Collections.emptyMap());
     }
 }
