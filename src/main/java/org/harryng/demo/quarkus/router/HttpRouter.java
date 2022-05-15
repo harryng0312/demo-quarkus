@@ -25,8 +25,15 @@ public class HttpRouter {
     @Route(path = "/*", type = Route.HandlerType.FAILURE, order = 1500)
     public void handleError(RoutingContext context, HttpServerResponse response) {
         logger.error("Error[" + context.response().getStatusCode() + "]:" + context.response().getStatusMessage());
-        if(!response.ended()) {
-            response.end(String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
+        if (!response.ended()) {
+            response.putHeader("X-Correlation-ID", context.request().getHeader("X-Correlation-ID"));
+            response.end(String.join("",
+                            "{" +
+                                    "\"correlationId\":",
+                            "\"" + context.request().getHeader("X-Correlation-ID") + "\",",
+                            "\"code\":",
+                            "\"" + context.response().getStatusCode() + "\",",
+                            "\"message\":\"",
                             context.response().getStatusMessage(), "\"}"))
                     .subscribe().with(v -> Future.succeededFuture());
         }

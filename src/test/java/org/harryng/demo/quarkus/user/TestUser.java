@@ -121,10 +121,11 @@ public class TestUser {
     @Test
     public void findUserByUsername() throws Exception {
         var res = given()
+                .header("X-Correlation-ID", UUID.randomUUID().toString())
                 .when()
                 .header("content-type", "application/json")
                 .header("Accept-Language", "en")
-                .get("/http/user/username/username 3");
+                .get("/http/user/username/username 4");
         logger.info("res:" + res.body().prettyPrint());
 //        var user = userService.getByUsername(SessionHolder.createAnonymousSession(), "username 3",
 //                        Collections.emptyMap())

@@ -3,6 +3,7 @@ package org.harryng.demo.quarkus.router.http;
 import io.quarkus.vertx.web.*;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
@@ -16,6 +17,8 @@ import org.harryng.demo.quarkus.util.SessionHolder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
@@ -135,6 +138,13 @@ public class UserRouter extends AbstractController {
     @Route(path = "/username/:username", methods = Route.HttpMethod.GET, order = 200)
     public Uni<UserImpl> getByUsername(RoutingContext ctx, @Param("username") String username) throws Exception {
         logger.info("into /http/user/username get");
-        return userService.getByUsername(SessionHolder.createAnonymousSession(), username, Collections.emptyMap());
+        return userService.getByUsername(SessionHolder.createAnonymousSession(), username, Collections.emptyMap())
+                .onFailure().invoke(Unchecked.consumer((ex) -> {
+                    if (ex instanceof NoResultException || ex instanceof NonUniqueResultException) {
+                        ctx.response().setStatusCode(404).setStatusMessage(ex.getMessage());
+                    } else {
+                        throw new Exception(ex);
+                    }
+                }));
     }
 }
