@@ -18,9 +18,9 @@ public class AuthInterceptor {
 
     @AroundInvoke
     protected Object invoke(InvocationContext context) throws Exception {
-        logger.info("+++++");
+//        logger.info("+++++");
         Object ret = context.proceed();
-        logger.info("-----");
+//        logger.info("-----");
         return ret;
     }
 }

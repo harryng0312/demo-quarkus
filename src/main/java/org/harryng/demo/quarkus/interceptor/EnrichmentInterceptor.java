@@ -3,7 +3,6 @@ package org.harryng.demo.quarkus.interceptor;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.mutiny.core.http.HttpServerRequest;
 import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.util.SessionHolder;
 
@@ -12,7 +11,6 @@ import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
-
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,7 +27,7 @@ public class EnrichmentInterceptor {
 
     @AroundInvoke
     protected Object invoke(InvocationContext context) throws Exception {
-        logger.info("+++++");
+//        logger.info("+++++");
         var sessionHolder = (SessionHolder) context.getParameters()[0];
         var extras = (Map<String, Object>) context.getParameters()[context.getParameters().length - 1];
         extras.put(BaseService.HTTP_HEADERS, ctx.request().headers());
@@ -40,7 +38,7 @@ public class EnrichmentInterceptor {
             sessionHolder.setLocale(Locale.ENGLISH);
         }
         Object ret = context.proceed();
-        logger.info("-----");
+//        logger.info("-----");
         return ret;
     }
 }
