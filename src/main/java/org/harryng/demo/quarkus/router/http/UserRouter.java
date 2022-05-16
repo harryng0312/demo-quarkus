@@ -91,7 +91,7 @@ public class UserRouter extends AbstractController {
     }
 
     @Route(path = "/*", methods = Route.HttpMethod.PUT, order = 500)
-    public Uni<Integer>  editUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) throws Exception {
+    public Uni<Integer> editUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) throws Exception {
         logger.info("into /http/user put");
         return editUser(ctx, buffer);
     }

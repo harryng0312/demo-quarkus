@@ -52,27 +52,12 @@ public class TestUser {
 
     @Test
     public void editUser2() throws Exception {
-        var user = new UserImpl();
-        var now = LocalDateTime.now();
-//        {"id":2,"createdDate":"2022-04-11T15:21:21.082945",
-        user.setId(3L);
-        user.setCreatedDate(now);
-//        "modifiedDate":"2022-04-11T15:21:21.082945","status":"1","username":"username 2",
-        user.setModifiedDate(now);
-        user.setStatus("1");
-        user.setUsername("");
-//        "password":"passwd2","screenName":"","dob":"2022-04-11","passwdEncryptedMethod":"plain"}
-        user.setPassword("passwd2");
-        user.setScreenName("");
-        user.setDob(now.toLocalDate());
-        user.setPasswdEncryptedMethod("plain");
-
         var req = "{\n" +
                 "    \"id\": 3,\n" +
                 "    \"createdDate\": \"2022-04-10T08:00:00\",\n" +
                 "    \"modifiedDate\": \"2022-04-10T08:00:00\",\n" +
                 "    \"status\": \"1\",\n" +
-                "    \"username\": \"\",\n" +
+                "    \"username\": \"username 2\",\n" +
                 "    \"password\": \"passwd3\",\n" +
                 "    \"screenName\": \"\",\n" +
                 "    \"dob\": \"2022-04-10\",\n" +
@@ -93,12 +78,12 @@ public class TestUser {
         var user = new UserImpl();
         var now = LocalDateTime.now();
 //        {"id":2,"createdDate":"2022-04-11T15:21:21.082945",
-        user.setId(3L);
+        user.setId(2L);
         user.setCreatedDate(now);
 //        "modifiedDate":"2022-04-11T15:21:21.082945","status":"1","username":"username 2",
         user.setModifiedDate(now);
         user.setStatus("1");
-        user.setUsername("");
+        user.setUsername("username 2");
 //        "password":"passwd2","screenName":"","dob":"2022-04-11","passwdEncryptedMethod":"plain"}
         user.setPassword("passwd2");
         user.setScreenName("screenname3");
@@ -115,7 +100,8 @@ public class TestUser {
 //        });
 //        runner.await().indefinitely();
 
-        userService.edit(SessionHolder.createAnonymousSession(), user, extras).await().indefinitely();
+        int result = userService.edit(SessionHolder.createAnonymousSession(), user, extras).await().indefinitely();
+        logger.info("edit result:" + result);
     }
 
     @Test

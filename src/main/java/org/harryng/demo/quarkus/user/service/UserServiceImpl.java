@@ -12,11 +12,13 @@ import org.harryng.demo.quarkus.user.mapper.UserMapper;
 import org.harryng.demo.quarkus.user.persistence.UserPanachePersistence;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
+import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 import org.harryng.demo.quarkus.util.page.Sort;
 import org.harryng.demo.quarkus.validation.ValidationPayloads;
 import org.harryng.demo.quarkus.validation.ValidationResult;
+import org.hibernate.LockMode;
 import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +26,16 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
 @Named("userService")
-//@Interceptors({EnrichmentInterceptor.class, AuthInterceptor.class})
 @Enriched
 @Authenticated
 // @Transactional(Transactional.TxType.NOT_SUPPORTED)
@@ -43,8 +47,9 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     protected UserPersistence userPersistence;
     @Inject
     protected UserReactivePersistence userReactivePersistence;
-//    @Inject
-//    protected Validator validator;
+
+    @Inject
+    protected Validator validator;
 
     @Inject
     protected UserPanachePersistence userPanachePersistence;
@@ -82,7 +87,7 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     @ReactiveTransactional
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-//        logger.info("edit user");
+        logger.info("edit user");
 //        return vertx.executeBlocking(Uni.createFrom().item(() -> {
 ////                    logger.info("validate user in blocking");
 //                    var payloadMap = ValidationPayloads.newInstance();
@@ -118,37 +123,27 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 //                            .flatMap(newUser -> Uni.createFrom().item(newUser.getId() == 0L ? 0 : 1));
 //                }));
         return Uni.createFrom().item(() -> {
-                    var payloadMap = ValidationPayloads.newInstance();
-                    payloadMap.put(SessionHolder.class, sessionHolder);
-                    payloadMap.put(Map.class, extras);
-                    payloadMap.put(UserService.class, this);
-                    var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
-                            .usingContext()
-                            .constraintValidatorPayload(payloadMap)
-                            .getValidator();
                     var valRs = validator.validate(user);
                     return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
                 })
-                .flatMap(Unchecked.function(v -> {
+                .flatMap(Unchecked.function(validationResult -> {
+                    if (!validationResult.isSuccess()) {
+                        throw new Exception(validationResult.getMessagesInJson());
+                    }
                     return getByUsername(sessionHolder, user.getUsername(), extras);
                 }))
-                .flatMap(Unchecked.function(user1 -> {
-                    if (user == null) {
-                        throw new NoResultException();
-                    }
-                    return userPanachePersistence.findById(user.getId());
-                }))
+                .flatMap(Unchecked.function(user1 -> userPanachePersistence.getSession()
+                                .flatMap(session -> session.lock(user1, LockMode.PESSIMISTIC_WRITE))
+                                .flatMap(v -> Uni.createFrom().item(user1))
+                ))
                 .map(Unchecked.function(oldUser -> {
-                    if (oldUser == null) {
-                        throw new NoResultException();
-                    }
                     userMapper.populateEntity(user, oldUser);
                     oldUser.setModifiedDate(LocalDateTime.now());
                     return oldUser;
                 }))
                 .flatMap(oldUser -> userPanachePersistence.persist(oldUser))
                 .onFailure().recoverWithItem(Unchecked.function(ex -> {
-                    if (ex instanceof NoResultException) {
+                    if (ex instanceof NoResultException || ex instanceof NonUniqueResultException) {
                         return new UserImpl();
                     } else {
                         throw new Exception(ex);
