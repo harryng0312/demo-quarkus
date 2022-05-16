@@ -28,14 +28,18 @@ public class EnrichmentInterceptor {
     @AroundInvoke
     protected Object invoke(InvocationContext context) throws Exception {
 //        logger.info("+++++");
-        var sessionHolder = (SessionHolder) context.getParameters()[0];
-        var extras = (Map<String, Object>) context.getParameters()[context.getParameters().length - 1];
-        extras.put(BaseService.HTTP_HEADERS, ctx.request().headers());
-        extras.put(BaseService.HTTP_COOKIES, ctx.request().cookies());
-        if (ctx.request().headers().get("Accept-Language") != null) {
-            sessionHolder.setLocale(Locale.forLanguageTag(ctx.request().headers().get("Accept-Language")));
-        } else {
-            sessionHolder.setLocale(Locale.ENGLISH);
+        if (context.getParameters().length > 0) {
+            var sessionHolder = (SessionHolder) context.getParameters()[0];
+            if (ctx.request().headers().get("Accept-Language") != null) {
+                sessionHolder.setLocale(Locale.forLanguageTag(ctx.request().headers().get("Accept-Language")));
+            } else {
+                sessionHolder.setLocale(Locale.ENGLISH);
+            }
+            if (context.getParameters().length > 1) {
+                var extras = (Map<String, Object>) context.getParameters()[context.getParameters().length - 1];
+                extras.put(BaseService.HTTP_HEADERS, ctx.request().headers());
+                extras.put(BaseService.HTTP_COOKIES, ctx.request().cookies());
+            }
         }
         Object ret = context.proceed();
 //        logger.info("-----");

@@ -40,7 +40,7 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
     @Override
     public boolean isValid(UserImpl value, ConstraintValidatorContext context) {
         var valiRs = true;
-        logger.info("validate user");
+//        logger.info("validate user");
         context.disableDefaultConstraintViolation();
         valiRs = value.getUsername() != null && !"".equals(value.getScreenName());
         var validatorContextMap = context.unwrap(HibernateConstraintValidatorContext.class)

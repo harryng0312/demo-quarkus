@@ -3,10 +3,8 @@ package org.harryng.demo.quarkus.user.service;
 import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import io.vertx.core.MultiMap;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
-import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.interceptor.Authenticated;
 import org.harryng.demo.quarkus.interceptor.Enriched;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
@@ -17,17 +15,12 @@ import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 import org.harryng.demo.quarkus.util.page.Sort;
-import org.harryng.demo.quarkus.validation.ValidationPayloads;
-import org.harryng.demo.quarkus.validation.ValidationResult;
-import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
-import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,44 +78,65 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     @ReactiveTransactional
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        logger.info("edit user");
-        return vertx.executeBlocking(Uni.createFrom().item(() -> {
-            logger.info("validate user in blocking");
-            var payloadMap = ValidationPayloads.newInstance();
-            payloadMap.put(SessionHolder.class, sessionHolder);
-            payloadMap.put(Map.class, extras);
-            payloadMap.put(UserService.class, this);
-            var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
-                    .usingContext()
-                    .constraintValidatorPayload(payloadMap)
-                    .getValidator();
-            var valRs = validator.validate(user, EditUserContraint.class);
-//            var headers = (MultiMap) extras.get(BaseService.HTTP_HEADERS);
-            return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
-        })).flatMap(Unchecked.function(valiRs -> {
-            if (!valiRs.isSuccess()) {
-                throw new Exception(valiRs.getMessagesInJson());
-            }
-//            return Uni.createFrom().item(1);
-//            return userPanachePersistence.getSession().flatMap(session -> session.merge(user))
-//                    .flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
-            return userPanachePersistence.findById(user.getId(), LockModeType.PESSIMISTIC_READ)
-                    .invoke(Unchecked.consumer(oldUser -> {
-                        if (oldUser == null) {
-                            throw new NoResultException();
-                        }
-                        userMapper.populateEntity(user, oldUser);
-                    }))
-                    .call(oldUser -> userPanachePersistence.persist(oldUser))
-                    .onFailure().recoverWithItem(Unchecked.function(ex -> {
-                        if (ex instanceof NoResultException) {
-                            return new UserImpl();
-                        } else {
-                            throw new Exception(ex);
-                        }
-                    }))
-                    .flatMap(newUser -> Uni.createFrom().item(newUser.getId() == 0L ? 0 : 1));
-        }));
+//        logger.info("edit user");
+//        return vertx.executeBlocking(Uni.createFrom().item(() -> {
+////                    logger.info("validate user in blocking");
+//                    var payloadMap = ValidationPayloads.newInstance();
+//                    payloadMap.put(SessionHolder.class, sessionHolder);
+//                    payloadMap.put(Map.class, extras);
+//                    payloadMap.put(UserService.class, this);
+//                    var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
+//                            .usingContext()
+//                            .constraintValidatorPayload(payloadMap)
+//                            .getValidator();
+//                    var valRs = validator.validate(user, EditUserContraint.class);
+//                    return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
+//                }))
+//                .flatMap(Unchecked.function(valiRs -> {
+//                    if (!valiRs.isSuccess()) {
+//                        throw new Exception(valiRs.getMessagesInJson());
+//                    }
+//                    return userPanachePersistence.findById(user.getId())
+//                            .invoke(Unchecked.consumer(oldUser -> {
+//                                if (oldUser == null) {
+//                                    throw new NoResultException();
+//                                }
+//                                userMapper.populateEntity(user, oldUser);
+//                            }))
+//                            .call(oldUser -> userPanachePersistence.persist(oldUser))
+//                            .onFailure().recoverWithItem(Unchecked.function(ex -> {
+//                                if (ex instanceof NoResultException) {
+//                                    return new UserImpl();
+//                                } else {
+//                                    throw new Exception(ex);
+//                                }
+//                            }))
+//                            .flatMap(newUser -> Uni.createFrom().item(newUser.getId() == 0L ? 0 : 1));
+//                }));
+        return Uni.createFrom().voidItem()
+                .flatMap(Unchecked.function(v -> getByUsername(sessionHolder, user.getUsername(), extras)))
+                .flatMap(Unchecked.function(user1 -> {
+                    if (user == null) {
+                        throw new NoResultException();
+                    }
+                    return userPanachePersistence.findById(user.getId())
+                            .map(Unchecked.function(oldUser -> {
+                                if (oldUser == null) {
+                                    throw new NoResultException();
+                                }
+                                userMapper.populateEntity(user, oldUser);
+                                return oldUser;
+                            }));
+                }))
+                .flatMap(oldUser -> userPanachePersistence.persist(oldUser))
+                .onFailure().recoverWithItem(Unchecked.function(ex -> {
+                    if (ex instanceof NoResultException) {
+                        return new UserImpl();
+                    } else {
+                        throw new Exception(ex);
+                    }
+                }))
+                .flatMap(newUser -> Uni.createFrom().item(newUser.getId() == null ? 0 : 1));
     }
 
     @Override

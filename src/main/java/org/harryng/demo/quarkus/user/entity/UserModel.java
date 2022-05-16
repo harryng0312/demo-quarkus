@@ -57,7 +57,7 @@ public class UserModel extends AbstractStatedEntity<Long> {
 
     @Basic
     @Column(name = "screenname")
-    @ScreennameConstraint
+//    @ScreennameConstraint
     public String getScreenName() {
         return screenName;
     }

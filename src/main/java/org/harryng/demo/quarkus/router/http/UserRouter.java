@@ -66,17 +66,9 @@ public class UserRouter extends AbstractController {
         return userService.getById(SessionHolder.createAnonymousSession(), Long.parseLong(id), Collections.emptyMap());
     }
 
-    protected void editUser(RoutingContext ctx, Buffer buffer) throws Exception {
-        userService.edit(SessionHolder.createAnonymousSession(),
-                        getObjectMapper().readValue(buffer.toString(), UserImpl.class), new HashMap<>())
-                .subscribe().with(result -> {
-                            var jsonRs = new JsonObject();
-                            jsonRs.put("result", result);
-                        },
-                        ex -> {
-                            logger.error("", ex);
-                            ctx.response().end(ex.getCause().getMessage());
-                        });
+    protected Uni<Integer> editUser(RoutingContext ctx, Buffer buffer) throws Exception {
+        return userService.edit(SessionHolder.createAnonymousSession(),
+                getObjectMapper().readValue(buffer.toString(), UserImpl.class), new HashMap<>());
     }
 
     @Route(path = "/:id", methods = Route.HttpMethod.GET, order = 500)
@@ -99,21 +91,21 @@ public class UserRouter extends AbstractController {
     }
 
     @Route(path = "/*", methods = Route.HttpMethod.PUT, order = 500)
-    public void editUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) throws Exception {
+    public Uni<Integer>  editUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) throws Exception {
         logger.info("into /http/user put");
-        editUser(ctx, buffer);
+        return editUser(ctx, buffer);
     }
 
     @Route(path = "/blocking/*", methods = Route.HttpMethod.PUT, type = Route.HandlerType.BLOCKING, order = 200)
-    public void editUserBlocking(RoutingContext ctx, @Body Buffer buffer) throws Exception {
+    public Uni<Integer> editUserBlocking(RoutingContext ctx, @Body Buffer buffer) throws Exception {
         logger.info("into /http/user/nonblocking put");
-        editUser(ctx, buffer);
+        return editUser(ctx, buffer);
     }
 
     @Route(path = "/:id", methods = Route.HttpMethod.DELETE, order = 500)
-    public void removeUser(RoutingContext ctx, @Param("id") String id) throws Exception {
+    public Uni<Integer> removeUser(RoutingContext ctx, @Param("id") String id) throws Exception {
         logger.info("into /http/user delete");
-        userService.remove(SessionHolder.createAnonymousSession(), Long.parseLong(id), Collections.emptyMap());
+        return userService.remove(SessionHolder.createAnonymousSession(), Long.parseLong(id), Collections.emptyMap());
     }
 
     @Route(path = "/username/:username", methods = Route.HttpMethod.GET, order = 200)
