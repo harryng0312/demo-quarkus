@@ -11,6 +11,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.mutiny.core.http.HttpServerResponse;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
+import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -22,6 +23,8 @@ import javax.persistence.NonUniqueResultException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @ApplicationScoped
 @RouteBase(path = "/http/user", produces = {MediaType.APPLICATION_JSON})
@@ -85,7 +88,7 @@ public class UserRouter extends AbstractController {
 //                });
         userService.edit(SessionHolder.createAnonymousSession(),
                         getObjectMapper().readValue(buffer.toString(), UserImpl.class),
-                        Collections.emptyMap())
+                        new HashMap<>())
                 .subscribe().with(result -> {
                             var jsonRs = new JsonObject();
                             jsonRs.put("result", result);

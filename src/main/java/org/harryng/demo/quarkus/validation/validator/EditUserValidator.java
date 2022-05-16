@@ -53,7 +53,7 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
         if ("".equals(value.getScreenName())) {
             context.buildConstraintViolationWithTemplate(
                             MessageBundles.get(I18nMessage.class,
-                                    Localized.Literal.of(headers.get("Accept-Language"))).errorScreenname())
+                                    Localized.Literal.of(sessionHolder.getLocale().getLanguage())).errorScreenname())
                     .addConstraintViolation();
         }
         UserImpl user = null;
@@ -64,7 +64,7 @@ public class EditUserValidator implements ConstraintValidator<EditUserContraint,
             if (user != null) {
                 context.buildConstraintViolationWithTemplate(
                                 MessageBundles.get(I18nMessage.class,
-                                        Localized.Literal.of(headers.get("Accept-Language"))).errorUserIsExisted())
+                                        Localized.Literal.of(sessionHolder.getLocale().getLanguage())).errorUserIsExisted())
                         .addConstraintViolation();
             }
         } catch (Exception e) {

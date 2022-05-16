@@ -16,7 +16,7 @@ public class SessionHolder implements Serializable {
     public static final long ANONYMOUS_ID = 0L;
     public static final String ANONYMOUS_USERNAME = "anonymous";
 
-    private static Locale lang = Locale.getDefault();
+    private Locale locale = Locale.getDefault();
     private UserImpl user;
 
     private SessionHolder(UserImpl user) {
@@ -45,5 +45,17 @@ public class SessionHolder implements Serializable {
 
     public static SessionHolder createInstance(UserImpl user) {
         return new SessionHolder(user);
+    }
+
+    public UserImpl getUser() {
+        return user;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale){
+        this.locale = locale;
     }
 }

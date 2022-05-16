@@ -7,6 +7,8 @@ import io.vertx.core.MultiMap;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.base.service.AbstractSearchableService;
 import org.harryng.demo.quarkus.base.service.BaseService;
+import org.harryng.demo.quarkus.interceptor.Authenticated;
+import org.harryng.demo.quarkus.interceptor.Enriched;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.mapper.UserMapper;
 import org.harryng.demo.quarkus.user.persistence.UserPanachePersistence;
@@ -29,10 +31,12 @@ import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Singleton
 @Named("userService")
+//@Interceptors({EnrichmentInterceptor.class, AuthInterceptor.class})
+@Enriched
+@Authenticated
 // @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> implements UserService {
 
@@ -93,8 +97,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                     .constraintValidatorPayload(payloadMap)
                     .getValidator();
             var valRs = validator.validate(user, EditUserContraint.class);
-            var headers = (MultiMap) extras.get(BaseService.HTTP_HEADERS);
-            return ValidationResult.getInstance(valRs, headers.get("Accept-Language"));
+//            var headers = (MultiMap) extras.get(BaseService.HTTP_HEADERS);
+            return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
         })).flatMap(Unchecked.function(valiRs -> {
             if (!valiRs.isSuccess()) {
                 throw new Exception(valiRs.getMessagesInJson());
