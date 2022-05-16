@@ -15,6 +15,9 @@ import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 import org.harryng.demo.quarkus.util.page.Sort;
+import org.harryng.demo.quarkus.validation.ValidationPayloads;
+import org.harryng.demo.quarkus.validation.ValidationResult;
+import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +116,18 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
 //                            }))
 //                            .flatMap(newUser -> Uni.createFrom().item(newUser.getId() == 0L ? 0 : 1));
 //                }));
-        return Uni.createFrom().voidItem()
+        return Uni.createFrom().item(() -> {
+                    var payloadMap = ValidationPayloads.newInstance();
+                    payloadMap.put(SessionHolder.class, sessionHolder);
+                    payloadMap.put(Map.class, extras);
+                    payloadMap.put(UserService.class, this);
+                    var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
+                            .usingContext()
+                            .constraintValidatorPayload(payloadMap)
+                            .getValidator();
+                    var valRs = validator.validate(user);
+                    return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
+                })
                 .flatMap(Unchecked.function(v -> getByUsername(sessionHolder, user.getUsername(), extras)))
                 .flatMap(Unchecked.function(user1 -> {
                     if (user == null) {

@@ -1,7 +1,5 @@
 package org.harryng.demo.quarkus.user.entity;
 
-import org.harryng.demo.quarkus.validation.annotation.EditUserContraint;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.time.LocalDate;
@@ -9,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_")
-@EditUserContraint(message = "[Screenname]{msg:error_screenname}", groups = {EditUserContraint.class})
+//@EditUserContraint(message = "[Screenname]{msg:error_screenname}", groups = {EditUserContraint.class})
 public class UserImpl extends UserModel {
 
     public UserImpl() {
