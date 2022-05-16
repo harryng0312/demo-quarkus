@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.persistence.NoResultException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -128,19 +129,22 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                     var valRs = validator.validate(user);
                     return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
                 })
-                .flatMap(Unchecked.function(v -> getByUsername(sessionHolder, user.getUsername(), extras)))
+                .flatMap(Unchecked.function(v -> {
+                    return getByUsername(sessionHolder, user.getUsername(), extras);
+                }))
                 .flatMap(Unchecked.function(user1 -> {
                     if (user == null) {
                         throw new NoResultException();
                     }
-                    return userPanachePersistence.findById(user.getId())
-                            .map(Unchecked.function(oldUser -> {
-                                if (oldUser == null) {
-                                    throw new NoResultException();
-                                }
-                                userMapper.populateEntity(user, oldUser);
-                                return oldUser;
-                            }));
+                    return userPanachePersistence.findById(user.getId());
+                }))
+                .map(Unchecked.function(oldUser -> {
+                    if (oldUser == null) {
+                        throw new NoResultException();
+                    }
+                    userMapper.populateEntity(user, oldUser);
+                    oldUser.setModifiedDate(LocalDateTime.now());
+                    return oldUser;
                 }))
                 .flatMap(oldUser -> userPanachePersistence.persist(oldUser))
                 .onFailure().recoverWithItem(Unchecked.function(ex -> {
