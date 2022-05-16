@@ -11,7 +11,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.mutiny.core.http.HttpServerResponse;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
-import org.harryng.demo.quarkus.base.service.BaseService;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
@@ -21,10 +20,8 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 @ApplicationScoped
 @RouteBase(path = "/http/user", produces = {MediaType.APPLICATION_JSON})
@@ -70,25 +67,8 @@ public class UserRouter extends AbstractController {
     }
 
     protected void editUser(RoutingContext ctx, Buffer buffer) throws Exception {
-//        sessionFactory.withStatelessTransaction(Unchecked.function(
-//                (sess, trans) -> userService.edit(SessionHolder.createAnonymousSession(),
-//                        getObjectMapper().readValue(buffer.toString(), UserImpl.class),
-//                        Map.of(BaseService.TRANS_STATELESS_SESSION, sess,
-//                                BaseService.TRANSACTION, trans,
-//                                BaseService.HTTP_HEADERS, ctx.request().headers(),
-//                                BaseService.HTTP_COOKIES, ctx.request().cookies())
-//                ))).subscribe().with(itm -> {
-//                    var jsonRs = new JsonObject();
-//                    jsonRs.put("result", itm);
-//                    ctx.response().end(jsonRs.toString());
-//                },
-//                ex -> {
-//                    logger.error("", ex);
-//                    ctx.response().end(ex.getCause().getMessage());
-//                });
         userService.edit(SessionHolder.createAnonymousSession(),
-                        getObjectMapper().readValue(buffer.toString(), UserImpl.class),
-                        new HashMap<>())
+                        getObjectMapper().readValue(buffer.toString(), UserImpl.class), new HashMap<>())
                 .subscribe().with(result -> {
                             var jsonRs = new JsonObject();
                             jsonRs.put("result", result);
@@ -102,7 +82,6 @@ public class UserRouter extends AbstractController {
     @Route(path = "/:id", methods = Route.HttpMethod.GET, order = 500)
     public Uni<UserImpl> getUserByIdNonBlocking(RoutingExchange exc, HttpServerResponse response, @Param("id") String id) throws Exception {
         logger.info("into /http/user/:id get");
-//        getUserById(exc, response, id).subscribe().with(ReactiveUtil.defaultSuccessConsumer());
         return getUserById(exc, response, id);
     }
 
@@ -110,7 +89,6 @@ public class UserRouter extends AbstractController {
     @Blocking
     public UserImpl getUserByIdBlocking(RoutingExchange exc, HttpServerResponse response, @Param("id") String id) throws Exception {
         logger.info("into /http/user/:id/blocking get");
-//        return getUserById(exc, response, id).await().indefinitely();
         return getVertx().executeBlockingAndAwait(getUserById(exc, response, id));
     }
 
