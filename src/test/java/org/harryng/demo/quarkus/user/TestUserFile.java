@@ -28,10 +28,9 @@ public class TestUserFile {
     @Test
     public void createUserFile() {
         var filePath = "./setup/jmeter/data/users.csv";
-        int numberOfUser = 1_000;
+        int numberOfUser = 10_000;
         var dateFormat = DateTimeFormatter.ISO_LOCAL_DATE;
         var dateTimeFormat = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-//        var vertx = Vertx.vertx();
         vertx.fileSystem()
                 .exists(filePath)
                 .flatMap(existed -> {
@@ -40,26 +39,18 @@ public class TestUserFile {
                         uRs = uRs.flatMap(v -> vertx.fileSystem().delete(filePath));
                     }
                     return uRs.flatMap(itm -> vertx.fileSystem()
-                            .open(filePath, new OpenOptions().setCreateNew(true).setAppend(true)));
+                            .open(filePath, new OpenOptions().setCreateNew(true)
+                                    .setAppend(true)));
                 })
-//                .flatMap(itm -> vertx.fileSystem().open(filePath, new OpenOptions().setCreate(false).setAppend(true)))
                 .attachContext()
-                .invoke(asyncFileItemWithContext -> {
-//                .flatMap(asyncFileItemWithContext -> {
+                .map(asyncFileItemWithContext -> {
                     logger.info("creating ...");
                     var asyncFile = asyncFileItemWithContext.get();
                     asyncFileItemWithContext.context().put("asyncFile", asyncFile);
                     var header = "\"user.id\",\"user.createdDate\",\"user.modifiedDate\",\"user.status\",\"user.username\"," +
                             "\"user.password\",\"user.screenName\",\"user.dob\",\"user.passwdEncryptedMethod\"\n";
                     asyncFile.writeAndForget(Buffer.buffer(header));
-//                    return asyncFile.write(Buffer.buffer(header)).invoke(v -> asyncFile.flushAndForget());
-                })
-                .attachContext()
-                .invoke(itemWithContext -> {
-//                .flatMap(itemWithContext -> {
-                    var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
-                    asyncFile.flushAndForget();
-//                    return asyncFile.flush();
+                    return asyncFile.flushAndForget();
                 })
                 .onItem().transformToMulti(v -> Multi.createFrom().<String>emitter((emitter) -> {
                             IntStream.range(0, numberOfUser)
@@ -83,27 +74,15 @@ public class TestUserFile {
                 ))
                 .attachContext()
                 .concatMap(itemWithContext -> {
-//                    logger.info("dest: itm: " + itemWithContext.get());
                     var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
                     asyncFile.writeAndForget(Buffer.buffer(itemWithContext.get()));
-                    return Multi.createFrom().item(itemWithContext);
-//                    return asyncFile.write(Buffer.buffer(itemWithContext.get()))
-//                            .invoke(v -> asyncFile.flushAndForget())
-//                            .map(v -> asyncFile)
-//                            .toMulti();
-
+                    return Multi.createFrom().item(asyncFile.flushAndForget());
                 })
                 .attachContext()
-                .invoke(itemWithContext -> {
-//                .flatMap(itemWithContext -> {
-                    var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
-                    asyncFile.flushAndForget();
-//                    return asyncFile.flush().toMulti();
-                })
-                .collect().last().onItemOrFailure().invoke((itm, thr) -> {
+                .collect().last().onItemOrFailure().invoke((itemWithContext, thr) -> {
                     logger.info("created done!");
-//                    var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
-//                    asyncFile.closeAndForget();
+                    var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
+                    asyncFile.closeAndForget();
                 })
                 .subscribe().with(Context.from(new HashMap<>()), v -> logger.info("Done all!"));
     }
