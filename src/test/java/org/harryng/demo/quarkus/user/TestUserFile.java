@@ -1,6 +1,5 @@
 package org.harryng.demo.quarkus.user;
 
-import com.google.inject.Inject;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Context;
 import io.smallrye.mutiny.Multi;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -28,7 +28,7 @@ public class TestUserFile {
     @Test
     public void createUserFile() {
         var filePath = "./setup/jmeter/data/users.csv";
-        int numberOfUser = 100;
+        int numberOfUser = 10;
 //        var vertx = Vertx.vertx();
         vertx.fileSystem()
                 .exists(filePath).flatMap(aBoolean -> {
@@ -87,7 +87,7 @@ public class TestUserFile {
                 .attachContext()
                 .collect().last().invoke(itemWithContext -> {
                     logger.info("created done!");
-                    var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
+//                    var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
 //                    asyncFile.closeAndForget();
                 })
                 .subscribe().with(Context.from(new HashMap<>()), v -> logger.info("Done all!"));
