@@ -1,5 +1,6 @@
 package org.harryng.demo.quarkus.user;
 
+import com.google.inject.Inject;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.mutiny.Context;
 import io.smallrye.mutiny.Multi;
@@ -21,14 +22,14 @@ import java.util.stream.IntStream;
 @QuarkusTest
 public class TestUserFile {
     static Logger logger = LoggerFactory.getLogger(TestUserFile.class);
-    //    @Inject
+    @Inject
     protected Vertx vertx;
 
     @Test
     public void createUserFile() {
         var filePath = "./setup/jmeter/data/users.csv";
-        int numberOfUser = 10_000;
-        var vertx = Vertx.vertx();
+        int numberOfUser = 100;
+//        var vertx = Vertx.vertx();
         vertx.fileSystem()
                 .exists(filePath).flatMap(aBoolean -> {
                     if (aBoolean) {
