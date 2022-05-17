@@ -45,17 +45,21 @@ public class TestUserFile {
 //                .flatMap(itm -> vertx.fileSystem().open(filePath, new OpenOptions().setCreate(false).setAppend(true)))
                 .attachContext()
                 .invoke(asyncFileItemWithContext -> {
+//                .flatMap(asyncFileItemWithContext -> {
                     logger.info("creating ...");
                     var asyncFile = asyncFileItemWithContext.get();
                     asyncFileItemWithContext.context().put("asyncFile", asyncFile);
                     var header = "\"user.id\",\"user.createdDate\",\"user.modifiedDate\",\"user.status\",\"user.username\"," +
                             "\"user.password\",\"user.screenName\",\"user.dob\",\"user.passwdEncryptedMethod\"\n";
                     asyncFile.writeAndForget(Buffer.buffer(header));
+//                    return asyncFile.write(Buffer.buffer(header)).invoke(v -> asyncFile.flushAndForget());
                 })
                 .attachContext()
                 .invoke(itemWithContext -> {
+//                .flatMap(itemWithContext -> {
                     var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
                     asyncFile.flushAndForget();
+//                    return asyncFile.flush();
                 })
                 .onItem().transformToMulti(v -> Multi.createFrom().<String>emitter((emitter) -> {
                             IntStream.range(0, numberOfUser)
@@ -82,16 +86,19 @@ public class TestUserFile {
 //                    logger.info("dest: itm: " + itemWithContext.get());
                     var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
                     asyncFile.writeAndForget(Buffer.buffer(itemWithContext.get()));
+                    return Multi.createFrom().item(itemWithContext);
 //                    return asyncFile.write(Buffer.buffer(itemWithContext.get()))
-////                            .flatMap(v -> asyncFile.flush())
+//                            .invoke(v -> asyncFile.flushAndForget())
 //                            .map(v -> asyncFile)
 //                            .toMulti();
-                    return Multi.createFrom().item(itemWithContext);
+
                 })
                 .attachContext()
                 .invoke(itemWithContext -> {
+//                .flatMap(itemWithContext -> {
                     var asyncFile = itemWithContext.context().<AsyncFile>get("asyncFile");
                     asyncFile.flushAndForget();
+//                    return asyncFile.flush().toMulti();
                 })
                 .collect().last().onItemOrFailure().invoke((itm, thr) -> {
                     logger.info("created done!");
