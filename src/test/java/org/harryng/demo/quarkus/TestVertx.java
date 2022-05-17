@@ -27,6 +27,7 @@ public class TestVertx {
                 })
                 .onItem().transformToMulti(v -> Multi.createFrom().emitter(multiEmitter -> {
                     IntStream.range(0, 10).forEach(multiEmitter::emit);
+                    multiEmitter.complete();
                 }))
                 .concatMap(itm -> {
                     logger.info("index concat: " + itm);
