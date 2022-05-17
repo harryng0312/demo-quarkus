@@ -63,7 +63,7 @@ public class UserRouter extends AbstractController {
 //                        String.join("", "{\"code\":", "\"404\"", ",\"message\":\"",
 //                                ex.getMessage(), "\"}")
 //                ));
-        return userService.getById(SessionHolder.createAnonymousSession(), Long.parseLong(id), Collections.emptyMap());
+        return userService.getById(SessionHolder.createAnonymousSession(), Long.parseLong(id), new HashMap<>());
     }
 
     protected Uni<Integer> editUser(RoutingContext ctx, Buffer buffer) throws Exception {
@@ -105,13 +105,13 @@ public class UserRouter extends AbstractController {
     @Route(path = "/:id", methods = Route.HttpMethod.DELETE, order = 500)
     public Uni<Integer> removeUser(RoutingContext ctx, @Param("id") String id) throws Exception {
         logger.info("into /http/user delete");
-        return userService.remove(SessionHolder.createAnonymousSession(), Long.parseLong(id), Collections.emptyMap());
+        return userService.remove(SessionHolder.createAnonymousSession(), Long.parseLong(id), new HashMap<>());
     }
 
     @Route(path = "/username/:username", methods = Route.HttpMethod.GET, order = 200)
     public Uni<UserImpl> getByUsername(RoutingContext ctx, @Param("username") String username) throws Exception {
         logger.info("into /http/user/username get");
-        return userService.getByUsername(SessionHolder.createAnonymousSession(), username, Collections.emptyMap())
+        return userService.getByUsername(SessionHolder.createAnonymousSession(), username, new HashMap<>())
                 .onFailure().invoke(Unchecked.consumer((ex) -> {
                     if (ex instanceof NoResultException || ex instanceof NonUniqueResultException) {
                         ctx.response().setStatusCode(404).setStatusMessage(ex.getMessage());
