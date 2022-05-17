@@ -31,12 +31,7 @@ public class TestUserFile {
         int numberOfUser = 10;
 //        var vertx = Vertx.vertx();
         vertx.fileSystem()
-                .exists(filePath).flatMap(aBoolean -> {
-                    if (aBoolean) {
-                        return vertx.fileSystem().delete(filePath);
-                    }
-                    return Uni.createFrom().voidItem();
-                })
+                .delete(filePath)
                 .flatMap(itm -> vertx.fileSystem().open(filePath, new OpenOptions().setCreate(true).setAppend(true)))
                 .attachContext()
                 .flatMap(asyncFileItemWithContext -> {
