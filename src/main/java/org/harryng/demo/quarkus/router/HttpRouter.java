@@ -27,6 +27,8 @@ public class HttpRouter {
         logger.error("Error[" + context.response().getStatusCode() + "]:" + context.response().getStatusMessage());
         if (!response.ended()) {
             response.putHeader("X-Correlation-ID", context.request().getHeader("X-Correlation-ID"));
+            int sttCode = context.response().getStatusCode();
+            context.response().setStatusCode(sttCode < 300 ? 500 : sttCode);
             response.end(String.join("",
                             "{" +
                                     "\"correlationId\":",
