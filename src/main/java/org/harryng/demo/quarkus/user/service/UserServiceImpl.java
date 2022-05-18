@@ -136,7 +136,7 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                     if (!validationResult.isSuccess()) {
                         throw new Exception(validationResult.getMessagesInJson());
                     }
-                    return getByUsername(sessionHolder, user.getUsername(), extras);
+                    return getById(sessionHolder, user.getId(), extras);
                 }))
                 .flatMap(Unchecked.function(user1 -> userPanachePersistence.getSession()
                         .flatMap(session -> session.lock(user1, LockMode.PESSIMISTIC_WRITE))
