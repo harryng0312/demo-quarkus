@@ -30,6 +30,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.validation.Validator;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +82,12 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @Override
     @ReactiveTransactional
     public Uni<Integer> add(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
-        return userPanachePersistence.persist(user).flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
+        return userPanachePersistence.getSession()
+                .flatMap(session -> session.createNativeQuery("select nextval('user_seq')").getSingleResult())
+                .invoke(o -> user.setId(((BigInteger) o).longValue()))
+                .flatMap(o -> userPanachePersistence.persist(user))
+                .flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
+//        return userPanachePersistence.persist(user).flatMap(user1 -> Uni.createFrom().item(user1 == null ? 0 : 1));
     }
 
     @Override
@@ -133,8 +139,8 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
                     return getByUsername(sessionHolder, user.getUsername(), extras);
                 }))
                 .flatMap(Unchecked.function(user1 -> userPanachePersistence.getSession()
-                                .flatMap(session -> session.lock(user1, LockMode.PESSIMISTIC_WRITE))
-                                .flatMap(v -> Uni.createFrom().item(user1))
+                        .flatMap(session -> session.lock(user1, LockMode.PESSIMISTIC_WRITE))
+                        .flatMap(v -> Uni.createFrom().item(user1))
                 ))
                 .map(Unchecked.function(oldUser -> {
                     userMapper.populateEntity(user, oldUser);

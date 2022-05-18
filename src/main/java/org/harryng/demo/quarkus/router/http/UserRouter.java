@@ -1,5 +1,6 @@
 package org.harryng.demo.quarkus.router.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.vertx.web.*;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
@@ -85,9 +86,10 @@ public class UserRouter extends AbstractController {
     }
 
     @Route(path = "/*", methods = Route.HttpMethod.POST, order = 500)
-    public void addUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) {
+    public Uni<Integer> addUserNonBlocking(RoutingContext ctx, @Body Buffer buffer) throws Exception {
         logger.info("into /http/user post");
-        ctx.next();
+        return userService.add(SessionHolder.createAnonymousSession(),
+                getObjectMapper().readValue(buffer.toString(), UserImpl.class), new HashMap<>());
     }
 
     @Route(path = "/*", methods = Route.HttpMethod.PUT, order = 500)
