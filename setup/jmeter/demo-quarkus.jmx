@@ -30,7 +30,7 @@
           </elementProp>
           <elementProp name="thread.number" elementType="Argument">
             <stringProp name="Argument.name">thread.number</stringProp>
-            <stringProp name="Argument.value">10000</stringProp>
+            <stringProp name="Argument.value">5000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="thread.rampUp" elementType="Argument">
@@ -40,7 +40,7 @@
           </elementProp>
           <elementProp name="thread.loops" elementType="Argument">
             <stringProp name="Argument.name">thread.loops</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="sitepath" elementType="Argument">
