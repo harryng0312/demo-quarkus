@@ -1,7 +1,7 @@
 package org.harryng.demo.quarkus.base.persistence;
 
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
-import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PagedResult;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 import org.harryng.demo.quarkus.util.persistence.PersistenceUtil;
 
@@ -17,33 +17,33 @@ public abstract class AbstractSearchablePersistence<Id extends Serializable, T e
         super(entityClass);
     }
 
-    @Transactional(Transactional.TxType.NOT_SUPPORTED)
-    public long countByConditions(
-            String countJpql,
-            Map<String, Serializable> params
-    ) throws RuntimeException, Exception {
-        return PersistenceUtil.countObjectByQuery(
-                getEntityManager(),
-                countJpql,
-                params
-        );
-    }
-
-    @Transactional(Transactional.TxType.NOT_SUPPORTED)
-    public Page<T> selectByConditions(
-            String queryJpql,
-            Map<String, Serializable> params,
-            PageInfo pageInfo,
-            long total
-    ) throws RuntimeException, Exception {
-        return PersistenceUtil.selectObjectByQuery(
-                getEntityManager(),
-                getEntityClass(),
-                queryJpql,
-                params,
-                pageInfo,
-                total,
-                LockModeType.NONE
-        );
-    }
+//    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+//    public long countByConditions(
+//            String countJpql,
+//            Map<String, Serializable> params
+//    ) throws RuntimeException, Exception {
+//        return PersistenceUtil.countObjectByQuery(
+//                getEntityManager(),
+//                countJpql,
+//                params
+//        );
+//    }
+//
+//    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+//    public PagedResult<T> selectByConditions(
+//            String queryJpql,
+//            Map<String, Serializable> params,
+//            PageInfo pageInfo,
+//            long total
+//    ) throws RuntimeException, Exception {
+//        return PersistenceUtil.selectObjectByQuery(
+//                getEntityManager(),
+//                getEntityClass(),
+//                queryJpql,
+//                params,
+//                pageInfo,
+//                total,
+//                LockModeType.NONE
+//        );
+//    }
 }

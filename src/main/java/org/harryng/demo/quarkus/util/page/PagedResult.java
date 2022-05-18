@@ -1,16 +1,18 @@
 package org.harryng.demo.quarkus.util.page;
 
+import io.quarkus.panache.common.Sort;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Page<T> implements Serializable {
+public class PagedResult<T> implements Serializable {
 
     private long total = 0L;
     private List<T> content = null;
     private PageInfo pageInfo = null;
 
-    public Page(List<T> content, PageInfo pageInfo, long total) {
+    public PagedResult(List<T> content, PageInfo pageInfo, long total) {
         this.total = total;
         this.content = content;
         this.pageInfo = pageInfo;
@@ -30,7 +32,7 @@ public class Page<T> implements Serializable {
 
     public PageInfo getPageInfo() {
         if(pageInfo == null){
-            pageInfo = new PageInfo(0, 0, 0, Sort.UNSORTED);
+            pageInfo = new PageInfo(0, 1, Sort.empty());
         }
         return pageInfo;
     }

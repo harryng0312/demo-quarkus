@@ -2,7 +2,7 @@ package org.harryng.demo.quarkus.base.persistence;
 
 import io.smallrye.mutiny.Uni;
 import org.harryng.demo.quarkus.base.entity.BaseEntity;
-import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PagedResult;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -17,7 +17,7 @@ public interface BaseSearchableReactivePersistence<Id extends Serializable, T ex
             Map<String, Serializable> params
     ) throws RuntimeException, Exception;
 
-    public Uni<Page<T>> selectByConditions(
+    public Uni<PagedResult<T>> selectByConditions(
             Mutiny.StatelessSession session,
             String queryJpql,
             Map<String, Serializable> params,

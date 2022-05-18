@@ -4,7 +4,7 @@ import org.harryng.demo.quarkus.base.entity.AbstractEntity;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchablePersistence;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
 import org.harryng.demo.quarkus.util.SessionHolder;
-import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PagedResult;
 import org.harryng.demo.quarkus.util.page.PageInfo;
 
 import io.smallrye.mutiny.Uni;
@@ -33,7 +33,7 @@ public abstract class AbstractSearchableService<Id extends Serializable, T exten
     }
 
     @Override
-    public Uni<Page<T>> findByConditions(
+    public Uni<PagedResult<T>> findByConditions(
             SessionHolder sessionHolder,
             String queryStr,
             Map<String, Object> params,
