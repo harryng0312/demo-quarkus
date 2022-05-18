@@ -94,40 +94,6 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @ReactiveTransactional
     public Uni<Integer> edit(SessionHolder sessionHolder, UserImpl user, Map<String, Object> extras) throws RuntimeException, Exception {
         logger.info("edit user");
-//        return vertx.executeBlocking(Uni.createFrom().item(() -> {
-////                    logger.info("validate user in blocking");
-//                    var payloadMap = ValidationPayloads.newInstance();
-//                    payloadMap.put(SessionHolder.class, sessionHolder);
-//                    payloadMap.put(Map.class, extras);
-//                    payloadMap.put(UserService.class, this);
-//                    var validator = validatorFactory.unwrap(HibernateValidatorFactory.class)
-//                            .usingContext()
-//                            .constraintValidatorPayload(payloadMap)
-//                            .getValidator();
-//                    var valRs = validator.validate(user, EditUserContraint.class);
-//                    return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
-//                }))
-//                .flatMap(Unchecked.function(valiRs -> {
-//                    if (!valiRs.isSuccess()) {
-//                        throw new Exception(valiRs.getMessagesInJson());
-//                    }
-//                    return userPanachePersistence.findById(user.getId())
-//                            .invoke(Unchecked.consumer(oldUser -> {
-//                                if (oldUser == null) {
-//                                    throw new NoResultException();
-//                                }
-//                                userMapper.populateEntity(user, oldUser);
-//                            }))
-//                            .call(oldUser -> userPanachePersistence.persist(oldUser))
-//                            .onFailure().recoverWithItem(Unchecked.function(ex -> {
-//                                if (ex instanceof NoResultException) {
-//                                    return new UserImpl();
-//                                } else {
-//                                    throw new Exception(ex);
-//                                }
-//                            }))
-//                            .flatMap(newUser -> Uni.createFrom().item(newUser.getId() == 0L ? 0 : 1));
-//                }));
         return Uni.createFrom().item(() -> {
                     var valRs = validator.validate(user);
                     return ValidationResult.getInstance(valRs, sessionHolder.getLocale());
@@ -162,27 +128,16 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
     @ReactiveTransactional
     public Uni<Integer> remove(SessionHolder sessionHolder, Long id, Map<String, Object> extras) throws RuntimeException, Exception {
         return userPanachePersistence.deleteById(id).flatMap(result -> Uni.createFrom().item(result ? 1 : 0));
-//        var session = (Mutiny.StatelessSession) extras.get(BaseService.TRANS_STATELESS_SESSION);
-//        return userReactivePersistence.delete(session, id);
     }
 
 
     @Override
     public Uni<UserImpl> getByUsername(SessionHolder sessionHolder, String username, Map<String, Object> extras) throws RuntimeException, Exception {
-//        var transSession = (Mutiny.StatelessSession) extras.get(TRANS_STATELESS_SESSION);
         UserImpl result = null;
         var pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id")); //PageRequest.of(0, 5, Sort.Direction.ASC, "id");
         var jpql = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
         var params = new HashMap<String, Object>();
         params.put("username", username);
-//        Uni<Page<UserImpl>> pageResult = findByConditions(sessionHolder, jpql, params, pageInfo, 1, Collections.emptyMap());
-//        return pageResult.flatMap(userPage -> {
-//            if (userPage.getTotal() > 0) {
-//                return Uni.createFrom().item(userPage.getContent().stream().findFirst().get());
-//            } else {
-//                return Uni.createFrom().nullItem();
-//            }
-//        });
         return userPanachePersistence.find(jpql, params).singleResult();
     }
 }
