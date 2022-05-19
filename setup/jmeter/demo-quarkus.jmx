@@ -30,7 +30,7 @@
           </elementProp>
           <elementProp name="thread.number" elementType="Argument">
             <stringProp name="Argument.name">thread.number</stringProp>
-            <stringProp name="Argument.value">5000</stringProp>
+            <stringProp name="Argument.value">10000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="thread.rampUp" elementType="Argument">
@@ -40,7 +40,7 @@
           </elementProp>
           <elementProp name="thread.loops" elementType="Argument">
             <stringProp name="Argument.name">thread.loops</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="sitepath" elementType="Argument">
@@ -372,7 +372,7 @@
           <stringProp name="shareMode">shareMode.all</stringProp>
         </CSVDataSet>
         <hashTree/>
-        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="get users" enabled="false">
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="get users" enabled="true">
           <boolProp name="LoopController.continue_forever">true</boolProp>
           <stringProp name="LoopController.loops">${thread.loops}</stringProp>
         </LoopController>
@@ -391,7 +391,7 @@
             <stringProp name="HTTPSampler.port"></stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/http/user/1</stringProp>
+            <stringProp name="HTTPSampler.path">/http/user/${user.id}</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -451,7 +451,7 @@
           </HTTPSamplerProxy>
           <hashTree/>
         </hashTree>
-        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="update users" enabled="true">
+        <TransactionController guiclass="TransactionControllerGui" testclass="TransactionController" testname="update users" enabled="false">
           <boolProp name="TransactionController.includeTimers">false</boolProp>
           <boolProp name="TransactionController.parent">false</boolProp>
         </TransactionController>
