@@ -1,6 +1,5 @@
 package org.harryng.demo.quarkus.router.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.vertx.web.*;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
@@ -8,7 +7,6 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.mutiny.core.http.HttpServerResponse;
 import org.harryng.demo.quarkus.base.controller.AbstractController;
@@ -21,7 +19,6 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.ws.rs.core.MediaType;
-import java.util.Collections;
 import java.util.HashMap;
 
 @ApplicationScoped

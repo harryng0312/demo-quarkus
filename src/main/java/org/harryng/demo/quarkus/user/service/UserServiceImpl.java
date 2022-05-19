@@ -1,6 +1,7 @@
 package org.harryng.demo.quarkus.user.service;
 
 import io.quarkus.hibernate.reactive.panache.common.runtime.ReactiveTransactional;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 import org.harryng.demo.quarkus.base.persistence.BaseSearchableReactivePersistence;
@@ -12,21 +13,15 @@ import org.harryng.demo.quarkus.user.mapper.UserMapper;
 import org.harryng.demo.quarkus.user.persistence.UserPanachePersistence;
 import org.harryng.demo.quarkus.user.persistence.UserPersistence;
 import org.harryng.demo.quarkus.user.persistence.UserReactivePersistence;
-import org.harryng.demo.quarkus.util.ReactiveUtil;
 import org.harryng.demo.quarkus.util.SessionHolder;
-import org.harryng.demo.quarkus.util.page.PageInfo;
-import org.harryng.demo.quarkus.util.page.Sort;
-import org.harryng.demo.quarkus.validation.ValidationPayloads;
 import org.harryng.demo.quarkus.validation.ValidationResult;
 import org.hibernate.LockMode;
-import org.hibernate.validator.HibernateValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.validation.Validator;
@@ -130,14 +125,16 @@ public class UserServiceImpl extends AbstractSearchableService<Long, UserImpl> i
         return userPanachePersistence.deleteById(id).flatMap(result -> Uni.createFrom().item(result ? 1 : 0));
     }
 
-
     @Override
     public Uni<UserImpl> getByUsername(SessionHolder sessionHolder, String username, Map<String, Object> extras) throws RuntimeException, Exception {
-        UserImpl result = null;
-        var pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id")); //PageRequest.of(0, 5, Sort.Direction.ASC, "id");
-        var jpql = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
+//        UserImpl result = null;
+//        var pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id")); //PageRequest.of(0, 5, Sort.Direction.ASC, "id");
+//        var condition = "select u from " + UserImpl.class.getCanonicalName() + " u where u.username = :username";
+        var condition = "username=:username";
+        var sort = Sort.by("createdDate");
         var params = new HashMap<String, Object>();
         params.put("username", username);
-        return userPanachePersistence.find(jpql, params).singleResult();
+        return userPanachePersistence.find(condition, params).firstResult()
+                .replaceIfNullWith(new UserImpl());
     }
 }

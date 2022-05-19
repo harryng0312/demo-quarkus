@@ -1,14 +1,14 @@
 package org.harryng.demo.quarkus.user;
 
+import io.quarkus.panache.common.Sort;
 import io.quarkus.qute.Qute;
 import io.quarkus.qute.i18n.MessageBundles;
 import io.quarkus.test.junit.QuarkusTest;
 import org.harryng.demo.quarkus.user.entity.UserImpl;
 import org.harryng.demo.quarkus.user.service.UserService;
 import org.harryng.demo.quarkus.util.SessionHolder;
-import org.harryng.demo.quarkus.util.page.Page;
+import org.harryng.demo.quarkus.util.page.PagedResult;
 import org.harryng.demo.quarkus.util.page.PageInfo;
-import org.harryng.demo.quarkus.util.page.Sort;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -33,9 +33,9 @@ public class TestUser {
     @Test
     public void sort() {
         List<String> content = new ArrayList<>();
-        PageInfo pageInfo = new PageInfo(0, 5, 0, Sort.by(Sort.Direction.ASC, "id"));
-        Page p = new Page<>(content, pageInfo, 10);
-        logger.info("unsorted: " + (Sort.unsorted() == null));
+        PageInfo pageInfo = new PageInfo(0, 5, Sort.ascending("id_"));
+        PagedResult p = new PagedResult<>(content, pageInfo, 10);
+        logger.info("unsorted: " + (Sort.empty() == null));
     }
 
     @Test
@@ -111,10 +111,10 @@ public class TestUser {
                 .when()
                 .header("content-type", "application/json")
                 .header("Accept-Language", "en")
-                .get("/http/user/username/username 4");
-        logger.info("res:" + res.body().prettyPrint());
+                .get("/http/user/username/username 7")
+                .body().prettyPrint();
 //        var user = userService.getByUsername(SessionHolder.createAnonymousSession(), "username 3",
-//                        Collections.emptyMap())
+//                        new HashMap<>())
 //                .await().indefinitely();
 //        logger.info("user:" + user);
     }
